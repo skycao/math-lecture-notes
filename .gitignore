@@ -1,0 +1,5 @@
+# ignore all non tex/pdf files
+*.aux
+*.dvi
+*.log
+*.synctex.gz
