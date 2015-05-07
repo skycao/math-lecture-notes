@@ -1,0 +1,1667 @@
+\documentclass[a4paper,12pt]{report}
+
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage{wasysym}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{eucal}
+\usepackage{txfonts}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usetikzlibrary{arrows, scopes, positioning}
+\usepackage{comment}
+\tikzset{node distance=2cm, auto}
+
+\newcommand{\uint}[1]{[ #1 \rangle}
+\newcommand{\dint}[1]{\langle #1 ]}
+\newcommand*{\ifstrict}{\rotatebox[origin=c]{-180}{$\strictif$}}
+\newcommand{\ms}[1]{\mathscr{#1}}
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\ovl}[1]{\overline{#1}}
+\newcommand{\floor}[1]{ \lfloor #1 \rfloor }
+\newcommand{\ffloor}[1] { \left \lfloor #1 \right \rfloor }
+\newcommand{\ceil}[1]{ \lceil #1 \rceil }
+\newcommand{\fceil}[1]{ \left \lceil #1 \right \rceil}
+\newcommand{\nullspace}{ \text{null } }
+\newcommand{\range}{ \text{range } }
+\newcommand{\inprod}[2]{ \langle #1, #2 \rangle }
+\newcommand{\real} { \operatorname{Re} }
+\newcommand{\imag} { \operatorname{Im} }
+\newcommand{\inv}[1] { #1^{-1} }
+\newcommand{\varep}{ \varepsilon }
+\newcommand{\cl}[1]{ \text{cl}\left(#1\right)}
+\newcommand{\homeo} {homeomorphic }
+\newcommand{\sse} {\subseteq}
+\newcommand{\bs} {\backslash}
+\newcommand{\vphi} {\varphi}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{prop}[theorem]{Proposition}
+
+\newenvironment{definition}[1][Definition.]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{example}[1][Example.]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{remark}[1][Remark.]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\title{Math 202B Lecture Notes}
+\author{Sky Cao}
+\date{Spring 2015}
+
+\begin{document}
+
+	\begin{titlepage}
+
+		\maketitle
+
+	\end{titlepage}
+	
+	\chapter{Integration}
+	
+	\section{Measurable Functions}
+	
+	Let $X$ be a set, $S$ a $\sigma$-ring of subsets, $B$ a Banach space. Given the measurable space $(X, S)$, we wish to answer the question: what kinds of functions $f : X \rightarrow B$ can we integrate?
+	
+	Given $E \in S$, let $\chi_E$ be its characteristic function. Given the Banach space $B$, for $b \in B$, we can obtain the function $b\chi_E$, i.e. $b\chi_E : X \rightarrow B$ is such that:
+	\[ b\chi_E = \begin{cases}
+					b & x \in E \\
+					0 & x \notin E
+				\end{cases}
+	\]
+	
+	\begin{definition}
+	A ``\textbf{simple $S$-measurable $B$-valued}" function is a function $f : X \rightarrow B$ such that the range of $f$ is finite, and if $b \in \range(f), b \neq 0$, then $\inv{f}(b) \in S$. 
+	\end{definition}
+	
+	\begin{definition}
+	$\text{MSF}(X, S, B)$ is the collection of all simple $S$-measurable $B$-valued functions from $X$ to $B$. It will often be denoted \textbf{MSF}. 
+	\end{definition}
+	
+	\begin{remark}
+	For all $f \in \text{MSF}(X, S, B)$, $f = \sum_{j=1}^n b_j\chi_{E_j}$ with the $b_j$ distinct and not equal to 0. 
+	\end{remark}
+	
+	\begin{remark}
+	$\text{MSF}(X, S, B)$ is a vector space for the pointwise operations. 
+	\end{remark}
+	Let $\mu$ be a measure on $S$ (or at least finitely additive, if $S$ is a ring). 
+	
+	\begin{definition}
+	A ``\textbf{simple $\mu$-integrable $B$-valued function}" is a function $f$ in $\text{MSF}(X, S, B)$ such that $f = \sum_{j=1}^n b_j \chi_{E_j}$ with the $E_j$ disjoint and $\mu(E_j) < \infty$ for all $j$. Note we don't require the $b_j$ to be distinct or not equal to 0. 
+	\end{definition}
+	
+	\begin{definition}
+	$\text{ISF}(X, S, \mu, B)$ is the collection of all simple $\mu$-integrable $B$-valued functions. It will often be denoted \textbf{ISF}.
+	\end{definition}
+	\begin{definition}
+	The \textbf{carrier} of a function $f : X \rightarrow B$, denoted $C(f)$, is defined as:
+	\[ C(f) = \{ x \in X ~|~ f(x) \neq 0 \} \]
+	\end{definition}
+	
+	\noindent We want to define integration is such a way so that if $f \in \text{ISF}(X, S, \mu ,B)$, we have:
+	\[ \int f d\mu = \sum_j b_j \mu(E_j) \]
+	But first we need to ask if this expression is well-defined, because $f \in \text{ISF}(X, S, \mu, B)$ can be represented as a sum in more than one way. 
+	
+	\begin{prop}
+	$\int f d\mu$ is well-defined. 
+	\end{prop}
+	\begin{proof}
+	Let $f = \sum_j b_j\chi_{E_j} = \sum_k c_k \chi_{F_k}$, with the $E_j$'s disjoint and the $F_k$'s disjoint. We can assume all the $b_j, c_k \neq 0$, because it is clear that taking them out will not affect the value of $\int f d\mu$. We then have:
+	\[ C(f) = \bigoplus_j E_j = \bigoplus_k F_k \]
+	Note $\chi_{E_j} \chi_{F_k} = \chi_{E_j \cap F_k}$. Also note $\{E_j \cap F_k\}_{j,k}$ is a disjoint collection of sets. We have:
+	\[ E_j = \bigoplus_k E_j \cap F_k \text{ and } F_k = \bigoplus_j E_j \cap F_k \]
+	We can thus obtain:
+	\[ f = \sum_{j, k} b_j \chi_{E_j \cap F_k} = \sum_{k, j} c_k \chi_{E_j \cap F_k} \]
+	So if $E_j \cap F_k \neq \varnothing$ for some $j, k$, then $b_j = c_k$ necessarily. This shows that $\int f d\mu$ is well-defined, because:
+	\begin{align*}
+	\sum_j b_j \mu(E_j) &= \sum_{j, k} b_j \mu(E_j \cap F_k) \\
+	&= \sum_{E_j \cap F_k \neq \varnothing} b_j \mu(E_j \cap F_k) \\
+	&= \sum_{E_j \cap F_k \neq \varnothing} c_k \mu(E_j \cap F_k) \\
+	&= \sum_{k, j} c_k \mu(E_j \cap F_k) \\ 
+	&= \sum_k c_k \mu(F_k)
+	\end{align*}
+	\end{proof} 
+	
+	\noindent We are making progress. We now have a concept of integration for some relatively simple functions. 
+	
+	\begin{definition}
+	For $G \sse X$, we say that $G$ is \textbf{locally $S$-measurable} if $G \cap E \in S$ for every $E \in S$. 
+	\end{definition}
+
+	\begin{definition}
+	$\text{M}_{\text{loc}}(S)$ is the set of locally $S$-measurable subsets. Note it is a $\sigma$-ring if $S$ is a $\sigma$-ring. 
+	\end{definition}	
+	
+	\begin{remark}
+	For any $G \in \text{M}_{\text{loc}}(S)$, we can define:
+	\[ \int_G f d\mu = \sum_j b_j \mu(E_j \cap G) \]
+	Note $\int f d\mu = \int_X f d\mu$. 
+	\end{remark}
+	
+	\begin{definition} The \textbf{indefinite integral} of $f$ for $\mu$ is defined to be the function from $\text{M}_{\text{loc}}(S)$ to $B$ 	that takes $G \mapsto \int_G f d\mu$. 
+	\end{definition}
+			
+	\begin{remark}
+	The indefinite integral is finitely additive:
+	\begin{align*}
+	\int_{G \oplus H} f d\mu &= \sum_j b_j \mu(E_j \cap (G \oplus H)) \\
+	&= \sum_j b_j \left( \mu(E_j \cap G) + \mu(E_j \cap H) \right) \\
+	&= \int_G f d\mu + \int_H f d\mu 
+	\end{align*}
+	\end{remark}
+	
+	\begin{prop}
+	Let $f, g \in ISF$. Then $\int (f + g) d\mu = \int f d\mu + \int g d\mu$. Also, for $r \in \mathbb{R}$, we have $\int (rf) d\mu = r \int f d\mu$. Thus $f \mapsto \int f d\mu$ is a linear operator from ISF to $B$. 
+	\end{prop}
+	\begin{proof}
+	The scalar multiplication part is easy enough to see. We will focus on the additivity part. Let $f = \sum_j b_j \chi_{E_j}$ and $g = \sum_k c_k \chi_{F_k}$. By adding terms with $0$ coefficients on each side, we can ensure that:
+	\[ \bigoplus_j E_j = \bigoplus_k F_k \]
+	We can then write:
+	\[ f = \sum_{j, k} b_j \chi_{E_j \cap F_k} \text{ and } g = \sum_{k, j} c_k \chi_{Ej \cap F_k} \]
+	Thus:
+	\[ f + g = \sum_{j, k} (b_j + c_k) \chi_{E_j \cap F_k} \]
+	We then have:
+	\begin{align*}
+	\int (f + g) d\mu &= \sum_{j, k} (b_j + c_k) \mu(E_j \cap F_k) \\
+	&= \sum_{j, k} b_j \mu(E_j \cap F_k) + \sum_{k, j} c_k \mu(E_j \cap F_k) \\
+	&= \int f d\mu + \int g d\mu 
+	\end{align*}
+	\end{proof}
+	
+	\noindent Now assume that $B$ has a norm. Given any $B$-valued function $f$, we can set $||f||(x) = ||f(x)||_B$. 
+	
+	\begin{prop}
+	For $f \in ISF$:
+	\begin{enumerate}[label=(\alph*)]
+		\item $||f|| \in \text{ISF}$ ($\mathbb{R}$-valued) 
+		\item $\left|\left| \int f d\mu \right|\right| \leq \int ||f|| d\mu$
+		\item Set $||f||_1 = \int ||f|| d\mu$. Then $f \mapsto ||f||_1$ is a seminorm on ISF. 
+	\end{enumerate}
+	\end{prop}
+	\begin{proof}
+	Let $f = \sum_j b_j \chi_{E_j}$. Then $||f|| = \sum_j ||b_j||_B \chi_{E_j}$. This proves (a). For (b), note:
+	\[ \left|\left| \int f d\mu \right|\right|_B = \left|\left| \int \sum_j b_j \mu(E_J) \right|\right|_B \leq \sum_j ||b_j||_B \mu(E_j) = \int ||f|| d\mu \]
+	And finally, to prove that (c) is a seminorm, we need to prove that it satisfies the triangle inequality and that it preserves scalar multiplication. The scalar multiplication part is apparent; we will focus on proving that the triangle inequality is satisfied. Let $f = \sum_j b_j \chi_{E_j}$, $g = \sum_k c_k \chi_{F_k}$. Arrange that $\bigoplus E_j = \bigoplus F_k$. Then:
+	\[ f = \sum_{j, k} b_j \chi_{E_j \cap F_k} \text{ and } g = \sum_{k, j} c_k \chi_{Ej \cap F_k} \]
+	and thus:
+	\[ f + g = \sum_{j, k} (b_j + c_k) \chi_{E_j \cap F_k} \]
+	So:
+	\begin{align*}
+	||f + g||_1 &= \int ||f + g|| d \mu \\
+	&= \sum_{j, k} ||b_j + c_k||_B \mu(\chi_{E_j \cap F_k}) \\
+	&\leq \sum_{j, k} ||b_j||_B \mu(\chi_{E_j \cap F_k}) + \sum_{k,j} ||c_k||_B \mu(\chi_{E_j \cap F_k}) \\
+	&\leq ||f||_1 + ||g||_1 
+	\end{align*}
+	Note $||\cdot||_1$ is not a norm, because we can define $f = b \chi_E$, where $b \neq 0$, $E \neq \varnothing$, $\mu(E) = 0$. Then $||f||_1 = b \mu(E) = 0$, but $f \neq 0$. 
+	\end{proof}
+	
+	\begin{definition}
+	We define $\textbf{NISF} = \{ f \in ISF ~|~ ||f||_1 = 0 \}$. NISF is a vector subspace of ISF. Note $f \in \text{NISF}$ if and only if $f = \sum_j b_j \chi_{E_j}$ where the $E_j$'s are disjoint, $b_j \neq 0$, and $\mu(E_j) = 0$. In other words $f \in \text{NISF}$ if and only if $\mu(C(f)) = 0$.  
+	\end{definition}
+	
+	\begin{definition}
+	We say that a property $P(\cdot)$ that depends on $x \in X$ holds $\mu$-almost everywhere if $\{ x ~|~ P(x) \text{ is not true} \}$ is a null set for $\mu$. We often write this as \textbf{a.e.$\mu$}.
+	\end{definition}
+	
+	\begin{remark}
+	We see that $f \in \text{NISF}$ if and only if $f(x) = 0$ a.e.$\mu$.
+	\end{remark}
+	
+	\noindent We can think of NISF as the set of functions that is keeping $||\cdot||_1$ from being a norm. To turn $||\cdot||_1$ into a norm, we must ``zero" out this set. This equates to taking the quotient space ISF / NISF. Formally, we have:
+	\[ \text{ISF} / \text{NISF} = \{ f + \text{NISF} ~|~ f \in ISF \} \]
+	Note that the elements of the quotient space are actually equivalence classes defined by the relation $f \sim g$ if $f - g \in \text{NISF}$. This is the same as saying $f \sim g$ if $f = g$ a.e.$\mu$. Thus $||\cdot||_1$ ``drops" to a norm on ISF / NISF.
+	
+	 From this norm, we obtain a metric, $d(f, g) = ||f - g||_1$. One question that we can naturally ask is whether the space is complete. The answer is usually no. We then may ask what exactly is the space's completion? This is where the notion of the abstract completion of a metric space comes in. Given any non-complete metric space $(M, d)$, we can form its abstract completion, which consists of equivalence classes of Cauchy sequences. Given two Cauchy sequences $\{x_n\}, \{y_n\}$, we say that they are equivalent if the sequence $\{d(x_n, y_n)\}$ converges to 0.
+	 
+	 Denote this set of equivalence classes by $\tilde{M}$. We can define a metric on $\tilde{M}$ by:
+	 \[ \tilde{d}(\{x_n\}, \{y_n\}) = \lim_{n \rightarrow \infty} d(x_n, y_n) \] 
+	We can check that with this metric, $\tilde{M}$ is complete. We can then identify $M$ as a subset of $\tilde{M}$ by $x \mapsto \{x\}$, the constant sequence $x_n = x$. Then $\tilde{d}_{|M} = d$. One can show that $M$ is dense in $\tilde{M}$. 
+	
+	If we have a vector space $V$ and a norm $||\cdot||$ on $V$, we can form its abstract completion $\tilde{V}$. On $\tilde{V}$, we have a natural sense of addition and scalar multiplication, making $\tilde{V}$ into a vector space, with $V$ a vector subspace of $\tilde{V}$. The norm on $V$ extends to a norm on $\tilde{V}$. 
+	
+	With this discussion in mind, we can form the abstract completion of $\text{ISF} / \text{NSF}$ for $||\cdot||_1$. We wish to represent the elements of this completion by functions, because they are easier to think about and deal with then equivalence classes of Cauchy sequences. The functions we obtain will be the $\mu$-integrable functions. We will thus begin to discuss sequences of integrable simple functions. For a while, we really only need $B$ to be a metric space with the special point 0. 
+	
+	\begin{definition}
+	A function $f : X \rightarrow B$ is \textbf{$S$-measurable} if there is a sequence $\{f_n\} \sse MSF$ that converges pointwise to $f$. 
+	\end{definition}
+	
+	\begin{definition}
+	$\ms{M}(X, S, B)$ is defined to be the set of $S$-measurable functions. 
+	\end{definition}
+	
+	\begin{definition}
+	Given a measure space $(X, S, \mu)$, a $B$-valued function $f$ is \textbf{$\mu$-measurable} if there is a sequence $\{f_n\} \sse MSF$ that converges pointwise to $f$ a.e.$\mu$.
+	\end{definition}
+	
+	\begin{remark}
+	$\mu$-measurability is weaker then $S$-measurability. 
+	\end{remark}
+	
+	\begin{remark}
+	The definition of $\mu$-measurability allows $f$ to be undefined on a null set. 
+	\end{remark}
+
+	\noindent Question: If $\{f_n\}$ is a sequence in $\ms{M}(X, S, B)$, and if $f_n \rightarrow f$ pointwise for some $f : X \rightarrow B$, is $f \in \ms{M}(X, S, B)$? To answer this question takes quite a bit of work, which we carry out here. 
+	
+	\section{Properties of $\ms{M}(X, S, B)$}
+	
+	Let $\{f_n\} \sse \text{MSF}$, $f_n \rightarrow f$ pointwise. Let $R_n = \range f_n$, a finite subset of $B$. Then $\bigcup_n R_n$ is countable. We can show:
+	\[ \range f \sse \ovl{\bigcup_n R_n} \]
+	We thus see that $\range f$ is separable. We can generalize and strengthen this result:	
+	
+	\begin{prop}
+	Let $\{f_n\}$ be a sequence of functions from $X$ to $B$, such that $\range f_n$ is separable for all $n$. Let $f_n \rightarrow f$ pointwise. Then $\range f$ is separable. 
+	\end{prop}
+	\begin{proof}
+	Let $M_n$ be a countable dense subset of $\range f_n$. Let $M = \bigcup_n M_n$. Note $M$ is countable. Let $f(x) \in \range f$. Then $f(x) = \lim_{n \rightarrow \infty} f_n(x)$. Note $\{f_n(x)\} \sse M$. Thus we see that $f(x)$ is a limit point of $M$, and so $f(x) \in \bar{M}$. Thus $\range f \sse \bar{M}$. Therefore $\range f$ is separable. 
+	\end{proof}
+	
+	\begin{corollary}
+	If $f \in \ms{M}(X, S, B)$, then $\range f$ is separable.
+	\end{corollary}
+	
+	\begin{corollary}
+	If $f$ is the pointwise limit of a sequence in $\ms{M}(X, S, B)$, then $\range f$ is separable. 
+	\end{corollary}
+	
+	\noindent Note also that if $f \in MSF$, then given any open set $U \sse B$, we have $\inv{f}(U \backslash \{0\}) \in S$. This motivates another proposition:
+	 
+	\begin{prop}
+	Let $\{f_n\}$ be a sequence of functions from $X$ to $B$ having the property that for each $n$, if $U \sse B$ is open, then:
+	\[ \inv{f_n}(U \backslash \{0\}) \in S \]
+	If $\{f_n\}$ converges pointwise to some $f$ and if $S$ is a $\sigma$-ring, then $f$ has the property that for all open $U \sse B$, $\inv{f}(U \backslash \{0\}) \in S$. 
+	\end{prop}
+	\begin{proof}
+	Let $U$ be an open subset of $B$. For simplicity, we can assume $0 \notin U$. For each $m$, let:
+	\[ U_m = \{b \in U ~|~ \text{dist}(b, U^c) >  1/m \} \]
+	Note:
+	\[ U = \bigcup_m U_m \]
+	Consider the following chain of if and only if's:
+	\begin{align*}
+	x \in \inv{f}(U) &\Longleftrightarrow f(x) \in U \\
+	& \Longleftrightarrow \exists m, \exists K \text{ such that } \forall k \geq K, f_k(x) \in U_m \\
+	& \Longleftrightarrow x \in \bigcup_{m=1}^\infty \bigcup_{K=1}^\infty \bigcap_{k \geq K} \inv{f_k}(U_m)
+	\end{align*}
+	This chain implies:
+	\[ \inv{f}(U) = \bigcup_{m=1}^\infty \bigcup_{K=1}^\infty \bigcap_{k \geq K} \inv{f_k}(U_m) \]
+	Now since $S$ is a $\sigma$-ring, we have that $\inv{f}(U) \in S$. 
+	\end{proof}
+	
+	\begin{corollary}
+	If $f \in \ms{M}(X, S, B)$, then $f$ has the property. 
+	\end{corollary}
+	
+	\begin{corollary}
+	If $f$ is the pointwise limit of a sequence of functions in $\ms{M}(X, S, B)$, then $f$ also has the property. 
+	\end{corollary}
+	
+	\noindent So now we know that if $f \in \ms{M}(X, S, B)$, then $\range f$ is separable and for every open $U \sse B$, $\inv{f}(U \backslash 0) \in S$. Is the converse true? The answer is in fact yes. 
+	
+	\begin{prop}
+	Given a measurable space $(X, S)$, and a Banach space $B$, let $f: X \rightarrow B$ satisfy:
+	\begin{enumerate}[label=(\alph*)]
+		\item $\range f$ is separable
+		\item for any open $U \sse B$, we have $\inv{f}(U \backslash 0) \in S$
+	\end{enumerate}
+	Then $f \in \ms{M}(X, S, B)$, i.e. it is $S$-measurable, i.e. there is a sequence $\{f_n\} \sse MSF$ converging pointwise to $f$. 
+	\end{prop}
+	\begin{proof}
+	Before we get into the details, here is a high-level overview of the proof, as the proof itself is a bit technical. Because $\range f$ is separable, we can use a dense subset to ``approximate" $\range f$. We can then approximate $f$ at some point $x$ by finding an element $b \in B$ that is say $\varep$-close to $f(x)$, and then taking the preimage of the $\varep$-ball about $f(x)$. Call this preimage $E$. Then the function $bE$ is in some sense a good approximation of $f$ at $x$. We can do this for every point in the range of $f$, and then add up all the $bE$'s to obtain an approximation of $f$ on all of $X$. 
+	
+	Let $\{b_n\}$ be a sequence of elements of $B$ that is dense in $\range f$. We can let $b_1 = 0$. Define:
+	\[ C_{ji} = \inv{f}\left( \left\{b ~\bigg|~ ||b - b_i|| < \frac{1}{j}, b \neq 0 \right\}\right) \]
+	Note by definition $C_{ji} \sse C(f)$ for all $j, i$. By hypothesis, $C_{ji} \in S$. We can put the lexicographic order on the pairs $(j, i)$. We want to ``disjointize" the $C_{ji}$ in some sense, so for all $n \in \mathbb{N}$, set:
+	\[ E_{ji}^n = C_{ji} \backslash \bigcup_{(j, i) < (l, k) \leq (n, n)} C_{lk} \]
+	Now set:
+	\[ f_n = \sum_{j, i \leq n} b_i \chi_{E_{ji}^n} \]
+	Note $f_n \in MSF$. We want to show that $f_n \rightarrow f$ pointwise. Let $x \in X$. First note that if $x \notin C(f)$, then since $C_{ji} \sse C(f)$ and $E_{ji}^n \sse C_{ji}$, we get that $f_n(x) = 0$ for all $n$. So assume $x \in C(f)$. Let $\varep > 0$. We need to find an $N$ such that if $n \geq N$, then $||f(x) - f_n(x)|| < \varep$. Choose $j_0$ such that $1 / j_0 < \varep$. Choose $i_0$ with $||f(x) - b_{i_0}||< 1/j_0$. Let $N = \max\{i_0, j_0\}$. Let $n \geq N$. Let $(l, k)$ be the largest tuple less than or equal to $(n, n)$ such that $||f(x) - b_k|| < 1 / l$. We know there must exist one, since $(j_0, i_0) \leq (N, N) \leq (n, n)$ is such a tuple. Note $(l, k) \geq (j_0, i_0)$, so that $l \geq j_0$. We then have that $x \in E_{lk}^n$, so that $f_n(x) = b_k$, and thus 
+	\[ ||f(x) - f_n(x)|| = ||f(x) - b_k|| < \frac{1}{l} < \frac{1}{j_0} < \varep \] 
+	as needed. 
+	\end{proof}
+	
+	\noindent We can now combine this proposition with the previous corollaries to obtain the following theorem:
+	\begin{theorem}
+	A function $f : X \rightarrow B$ is $S$-measurable if and only if $f$ satisfies:
+		\begin{enumerate}[label=(\alph*)]
+			\item $\range f$ is separable
+			\item for any $U \sse B$ open, $\inv{f}(U \backslash \{0\}) \in S$
+		\end{enumerate}
+	\end{theorem}	
+	
+	\noindent We have also shown that if we have a sequence of functions satisfying these two properties, then their pointwise limit also satisfies these two properties, and that any $f \in \ms{M}(X, S, B)$ satisfies these two properties. We thus obtain:
+	
+	\begin{theorem}
+	If $\{f_n\}$ is a sequence in $\ms{M}(X, S, B)$ and if $f_n \rightarrow f$ pointwise, then $f \in \ms{M}(X, S, B)$. 
+	\end{theorem}
+	
+	\noindent We can extend our results to the case where we have a measure space $(X, S, \mu)$, by considering $f$ everywhere except for on a null set. Here is theorem statement:
+	\begin{theorem}
+	Given a measure space $(X, S, \mu)$ and a Banach space $B$, $f \in \ms{M}(X, S, \mu, B)$ (i.e. $f$ is $\mu$-measurable) if and only if there is a null set $N$ such that:
+		\begin{enumerate}[label=(\alph*)]
+			\item $(\range f) \backslash N$ is separable
+			\item for any $U \sse B$ open  we have $\inv{f}(U \backslash \{0\}) \backslash N$ is $\mu$-measurable, i.e. is in $M(\mu^*)$. 
+		\end{enumerate}
+	\end{theorem}
+	\noindent The proof is similar enough to what we have done so far that we will omit it. It involves keeping track of a null set $N$ throughout. 
+	
+	\section{Convergence}
+	
+	Thus far we have seen two types of convergence: pointwise and uniform. We will see in this section a number of new types of convergence that will help us towards our goal of being able to integrate certain functions. 
+	
+	\begin{definition}
+	Given a sequence of $B$-valued functions $\{f_n\}$, we say that this sequence converges ``\textbf{almost uniformly}" (a.u.) to $f$ on $E$ if for all $\varep > 0$, there exists $F \sse E$, $\mu^*(E \backslash F) < \varep$ such that $\{f_n\}$, on $F$, converges uniformly to $f$. 
+	\end{definition}
+	
+	\noindent Note in this definition, we don't need an entire measure space, but rather just an outer measure $\mu^*$. This definition is used in the following theorem:
+	
+	\begin{theorem}
+	\emph{\textbf{(Egoroff's Theorem)}}
+	Let $\{f_n\}$ be a sequence in $\ms{M}(X, S, \mu, B)$ that converges to $f$ a.e. Let $E \in S$, $\mu(E) < \infty$. Then $\{f_n\}$ converges almost uniformly to $f$ on $E$. 
+	\end{theorem}
+	\begin{proof}
+	By removing a null set from $E$, we can assume $f_n \rightarrow f$ pointwise everywhere on $E$. For each $m, n \in \mathbb{N}$, set:
+	\[ E_n^m = \{x \in E ~|~ ||f(x) - f_k(x)|| > 1 / m \text{ for some } k \geq n \} \]
+	Note $E_n^m \in S$, because $f - f_k \in  \ms{M}(X, S, \mu, B)$ for all $k$, and $E_n^m$ can be written as the union of a bunch of $(f - f_k)^{-1}(U)$, where $U$ is the open set that is the complement of the closed ball $B(0, 1/m)$ for some $m$. 
+	
+	For fixed $m$, for each $x$, there exists $n$ such that $x \notin E_n^m$ by pointwise convergence. We thus have:
+	\[ {E_n^m}_{n \rightarrow \infty}\downarrow \O \]
+	for fixed $m$. Since $E_n^m \sse E$, and $\mu(E) < \infty$, we have $\mu(E_n^m) \rightarrow 0$ as $n \rightarrow \infty$, by continuity results for measures. Note this is where the essential assumption $\mu(E) < \infty$ comes into play, because without this, we cannot conclude $\mu(E_n^m) \rightarrow 0$. 
+	
+	Given $\varep > 0$, choose for each $m$ an $n_m$ such that:
+	\[ \mu(E_{n_m}^m) < \frac{\varep}{2^m} \]
+	Let:
+	\[ F = E ~ \backslash ~ \bigcup_{m=1}^\infty E_{n_m}^m \]
+	Note:
+	\[ \mu\left(\bigcup_{m=1}^\infty E_{n_m}^m \right) = \sum_{m=1}^\infty \mu(E_{n_m}^m) < \varep \]
+	and thus $\mu(E \backslash F) < \varep$. We claim that $f_n \rightarrow f$ uniformly on $F$. Let $\delta > 0$ be given. Choose $m$ so that $1/m < \delta$. Let $N = n_m$. Then for $k \geq N$, and for $x \in F$, we have $x \notin E_{n_m}^m$, and thus:
+	\[ ||f(x) - f_k(x)|| \leq \frac{1}{m} < \delta \]
+	as needed. 
+	\end{proof}
+
+	\begin{remark}
+	Let $X = [0, 1]$, $\mu$ be the Lebesgue measure. Define a sequence of subsets $E_n$ by: 
+	\[ \{[0, 1], [0, 1/2], [1/2, 1], [0, 1/3], [1/3, 2/3], [2/3, 1], [0, 1/4], \ldots \} \]
+	The pattern should be clear. Note $\mu(E_n) \rightarrow 0$ as $n \rightarrow \infty$. Let $f_n = \chi_{E_n} \in \text{ISF}$. Note $||f_n||_1 \rightarrow 0$ as $n \rightarrow \infty$. Thus $f_n \rightarrow 0$ for $||\cdot||_1$. So $\{f_n\}$ is a Cauchy sequence for $||\cdot||_1$. But notice $f_n$ does not converge pointwise to 0; $f_n(0) = 1$ for all $n$. We need to deal with this difference between convergence under the norm and pointwise convergence. 
+	\end{remark}	
+	
+	\noindent Let $\{f_n\}$ be a sequence of ISF$(X, S, \mu, B)$ that converges for $||\cdot||_1$ to $f \in \text{ISF}(X, S, \mu, B)$. Let $\varep > 0$. Let:
+	\[ E_n = \{x \in X ~|~ ||f(x) - f_n(x)|| \geq \varep \} \]
+	Note $f - f_n \in \text{ISF}$, which implies that $E_n \in S$, and that $\mu(E_n) < \infty$. Consider $\varep \chi_{E_n}$. We have:
+	\[ \varep \chi_{E_n} \leq ||f - f_n||_B \] 
+	which implies:
+	\[ \varep \mu(E_n) = \int \varep \chi_{E_n} d\mu \leq \int ||f - f_n||_B ~d\mu	\]
+	and so:
+	\[ \mu(E_n) \leq \frac{1}{\varep} ||f - f_n||_1 \]
+	Thus as $n \rightarrow \infty$, $\mu(E_n) \rightarrow 0$. This motivates the following definition:
+	
+	\begin{definition}
+	As sequence of $B$-valued functions $\{f_n\}$ \textbf{converges to a function $f$ in measure} if for any $\varep > 0$:
+	\[ \mu^*(\{x ~|~ ||f(x) - f_n(x)|| \geq \varep \}) \rightarrow 0 \text{ as } n \rightarrow \infty \]
+	Note this definition involves the outer measure $\mu^*$ because we are not assuming we have a measure space. 
+	\end{definition}
+	
+	\noindent Analogously, let $\{f_n\}$ be a sequence in ISF that is Cauchy for $||\cdot||_1$. Given $\varep > 0$, let:
+	\[ E_{mn} = \{ x ~|~ ||f_m(x) - f_n(x)|| \geq \varep \} \]
+	we can similarly find that:
+	\[ \lim_{m,n \rightarrow \infty} \mu(E_{mn}) = 0 \]
+	which motivates the following definition:
+	
+	\begin{definition}
+	A sequence of functions $\{f_n\}$ is \textbf{Cauchy in measure} if:
+	\[ \mu^*(\{x ~|~ ||f_m(x) - f_n(x)|| \geq \varep \}) \rightarrow 0 \text{ as } m, n \rightarrow \infty \]
+	\end{definition}
+		
+	\noindent Let us take a step back right now and think about what our goals are. Our ultimate goal is to find a set of functions that we can integrate. If you recall, we talked about how the vector space ISF / NISF is not complete. We then discussed how given an abstract non-complete vector space, we could form its completion by taking equivalence classes of Cauchy sequences. We then wanted to be able to represent these Cauchy sequences as functions, so that we could better work with them. Our goal is thus to associate each Cauchy sequence with a function in such a way that equivalent Cauchy sequences are associated with the same function. 
+	
+	\begin{definition}
+	A sequence $\{g_n\}$ is \textbf{almost uniformly Cauchy (a.u.Cauchy)} on $E \in S$ if for all $\varep > 0$, there exists $F \in S$ with $\mu(E \backslash F) < \varep$ such that $\{g_n\}$ is uniformly Cauchy on $F$.
+	\end{definition}
+	
+	\noindent We have seen that a sequence of ISF that is Cauchy for $||\cdot||_1$ is Cauchy in measure. The following lemma shows that being Cauchy in measure has certain implications.  
+	
+	\begin{lemma}
+	\emph{\textbf{(Riesz, Weyl)}}
+	Let $\{f_n\}$ be a sequence in $\ms{M}(X, S, \mu, B)$ that is Cauchy in measure. Then there is a subsequence that is almost uniformly Cauchy. 
+	\end{lemma}	
+	\begin{proof}
+	Let $\{f_n\}$ be a sequence that is Cauchy in measure. We want a subsequence $\{f_{n_m}\}$. Let $n_1 = 1$. Define the sequence inductively as follows: if we have $n_1, \ldots, n_m,$ choose $n_{m+1}$ such that:
+	\begin{enumerate}[label=(\alph*)]
+		\item $n_{m+1} > n_m$
+		\item $\forall k \geq n_{m+1}$, we have:
+		\[ \mu \left(\{x ~|~ f_{n_{m+1}}(x) - f_k(x)|| \geq 2^{-(m+1)} \} \right) < 2^{-(m+1)} \]
+	\end{enumerate}
+	Let $g_m = f_{n_m}$. We claim that $\{g_m\}$ is a.u.Cauchy. Let $\varep > 0$ be given. Choose $l$ such that:
+	\[ \sum_{m=l}^\infty 2^{-m} < \varep \]
+	Let:
+	\[ G = \bigcup_{m \geq l} \{x ~|~ ||g_{m+1}(x) - g_m(x)|| \geq 2^{-m} \} \]
+	Note $\mu(G) < \varep$, by how we selected the $g_m$. Let $E = \bigcup C(g_m) \in S$. Let $F = E \backslash G$, so that $\mu(E \backslash F) < \varep$. To show $\{g_m\}$ is uniformly Cauchy on $F$, let $\delta > 0$ be given. Choose $M$ such that:
+	\[ \sum_{m=M}^\infty 2^{-m} < \delta \]
+	Then for $m, n \geq M$, $m < n$, we have for all $x \in F$:
+	\[ ||g_n(x) - g_m(x)|| \leq ||g_n(x) - g_{n-1}(x)|| + \cdots + ||g_{m+1}(x) - g_m(x)|| \leq 2^{-(n-1)} + \cdots + 2^{-m} < \delta \]
+	as needed. 
+	\end{proof}
+	
+	\noindent Once we know that a sequence is a.u.Cauchy, we can deduce that it converges almost uniformly to a function.
+	
+	\begin{prop}
+	Let $\{f_n\}$ be a sequence that is a.u.Cauchy on $E \in S$. Then there is a function $f$ such that $f_n \rightarrow f$ a.u. and a.e. on $E$.
+	\end{prop}
+	\begin{proof}
+	For each $m$, choose $F_m \in S$ such that:
+	\[ \mu(E \backslash F_m) < \frac{1}{m} \]
+	and $\{f_n\}$ is uniformly Cauchy on $F_m$. Let $F = \bigcup F_m$. Note $E \backslash F \sse E \backslash F_m$ for all $m$, so $\mu(E \backslash F) \leq \mu(E \backslash F_m) < \frac{1}{m}$ for all $m$. Thus $\mu(E \backslash F) = 0$. 
+	
+	On each $F_m$, $\{f_n\}$ converges pointwise to a function, because $\{f_n\}$ is uniformly Cauchy, and thus each for each $x \in F_m$, $\{f_n(x)\}$ is a Cauchy sequence, and because $B$ is complete, $\{f_n(x)\}$ converges. Call this function $f$. Then $f_n \rightarrow f$ pointwise on $F_m$. Since $\{f_n\}$ is uniformly Cauchy, for all $\varep > 0$, there exists $N$ such that for $m, n \geq N$, we have for all $x \in F_m$:
+	\[ ||f_n(x) - f_m(x)|| < \varep \]
+	Letting $n \rightarrow \infty$, we get:
+	\[ ||f(x) - f_m(x)|| \leq \varep \]
+	and thus we see that $f_n \rightarrow f$ uniformly on $F_m$.
+	
+	Because $F = \bigcup F_m$, and $\{f_n\}$ converges pointwise on each $F_m$, we get that $\{f_n\}$ converges pointwise on $F$, say to $g$. Set $g(x) = 0$ for $x \notin F$. Because we also have that $\{f_n\}$ converges uniformly on every $F_m$, we see that $f_n \rightarrow g$ a.u. on $F$, and thus on $E$. Note also since $\mu(E \backslash F) = 0$, we have that $f_n \rightarrow g$ a.e. on $E$. 
+	\end{proof}
+	
+	\noindent As the following proposition shows, almost uniform convergence implies convergence in measure. 
+	
+	\begin{prop}
+	If $f_n \rightarrow f$ a.u., then $f_n \rightarrow f$ in measure. 
+	\end{prop}
+	\begin{proof}
+	Given $\varep > 0$, we need to consider:
+	\[ \mu \left( \{x ~|~ ||f(x) - f_n(x)|| \geq \varep \} \right) \]
+	Given $\delta > 0$, choose $F \sse E$, $\mu(E \backslash F) < \delta$ such that $f_n \rightarrow f$ uniformly on $F$. Choose $N$ such that for $n \geq N$, $||f(x) - f_n(x)|| < \varep$ for all $x \in F$. This implies for $n \geq N$:
+	\[ \{ x ~|~ ||f(x) - f_n(x)|| \geq \varep \} \sse F^c \]
+	and thus:
+	\[ \mu \left( \{x ~|~ ||f(x) - f_n(x)|| \geq \varep \} \right) < \delta \]
+	as needed.
+	\end{proof}
+	
+	\noindent We can now deduce that if $\{f_n\}$ is a sequence of ISF that is Cauchy for $||\cdot||_1$, then $\{f_n\}$ is Cauchy in measure, which implies that there is a subsequence $\{f_{n_k}\}$ that is a.u.Cauchy. We then have that $\{f_{n_k}\}$ converges to some $f$ a.u., which implies that $\{f_{n_k}\}$ converges to $f$ in measure. The natural next step is to show that then $\{f_n\}$ must also converge to $f$ in measure.
+	
+	\begin{prop}
+	If $\{f_n\}$ is Cauchy in measure, and if it has a subsequence that converges in measure to some $f \in \ms{M}(X, S, \mu, B)$, then $\{f_n\}$ converges to $f$ in measure. 
+	\end{prop}
+	\begin{proof}
+	Given $\varep > 0$, we need to consider:
+	\[ \mu(\{x ~|~ ||f(x) - f_n(x)|| \geq \varep \}) \]
+	Note:
+	\[ \{x ~|~ ||f(x) - f_n(x)|| \geq \varep \} \sse \left \{x ~\big|~ ||f(x) - f_{n_k}(x)|| \geq \frac{\varep}{2} \right\} \cup \left\{ x ~\big|~ ||f_{n_k}(x) - f_n(x)|| \geq \frac{\varep}{2} \right\} \]
+	Given $\delta > 0$, there exists $N$ such that for $n_k > N$:
+	\[ \mu\left( \left\{ x ~\big|~ ||f(x) - f_{n_k}(x) || \geq \frac{\varep}{2} \right\} \right) < \frac{\delta}{2} \]	
+	and for $n \geq N$:
+	\[ \mu \left( \left\{ x ~\big|~ ||f_{n_k}(x) - f_n(x) || \geq \frac{\varep}{2} \right\} \right) < \frac{\delta}{2} \]
+	We then have for $n \geq N$:
+	\[ \mu(\{x ~|~ ||f(x) - f_n(x)|| \geq \varep \}) < \frac{\delta}{2} + \frac{\delta}{2} = \delta \]
+	as needed. 
+	\end{proof}
+	
+	\noindent We have thus shown that if $\{f_n\}$ is a sequence of ISF that is Cauchy for $||\cdot||_1$, then $f_n \rightarrow f \in \ms{M}(X, S, \mu, B)$ in measure. 
+	
+	\begin{prop}
+	Let $\{f_n\}$ be a sequence that converges in measure to $f$ and to $g$. Then $f = g$ a.e.
+	\end{prop}
+	\begin{proof}
+	For given $\varep > 0$, we have:
+	\[ \{ x ~|~ ||f(x) - g(x)|| \geq \varep \} \sse \left \{ x ~\big|~ ||f(x) - f_n(x)|| \geq \frac{\varep}{2} \right\} \cup \left\{ x ~\big|~ ||g(x) - f_n(x)|| \geq \frac{\varep}{2} \right\} \]
+	Given $\delta > 0$, by convergence in measure, there exists $N$ such that for $n \geq N$, we have that the measures of the two sets on the right are both less than $\frac{\delta}{2}$, which implies:
+	\[ \mu(\{x ~|~ ||f(x) - g(x)|| \geq \varep\} < \delta \]
+	Since this holds for arbitrary $\delta$, we obtain:
+	\[ \mu(\{x ~|~ ||f(x) - g(x)|| \geq \varep\} = 0 \]
+	Note:
+	\[ \{ x ~|~ ||f(x) - g(x)|| \neq 0 \} \sse \bigcup_{k=1}^\infty ~ \left\{ x ~\big|~ ||f(x) - g(x)|| \geq \frac{1}{k} \right\} \]
+	We have shown that the measure of every set in the union on the right is 0. The measure of the set on the left must be less than or equal to the sum of the measures of the sets on the right. We thus obtain:
+	\[ \mu(\{x ~|~ ||f(x) - g(x)|| \neq 0 \}) = 0 \]
+	as needed. 
+	\end{proof}
+	
+	\noindent We thus see that if $f_n \rightarrow f$ in measure, then $f$ is unique a.e. We are almost done. We need to show that if $\{f_n\}, \{g_n\}$ are two equivalent Cauchy sequences in the sense that:
+	\[ ||f_n - g_n||_1 \rightarrow 0 \text{ as } n \rightarrow \infty \]
+	then if $f_n \rightarrow f$ in measure, then $g_n \rightarrow f$ in measure also. 
+	
+	\begin{prop}
+	Let $\{f_n\}$, $\{g_n\}$ be sequences in ISF that are Cauchy for $||\cdot||_1$. If $\{f_n\}$ is equivalent to $\{g_n\}$, and if $f_n \rightarrow f$ in measure, then $g_n \rightarrow f$ in measure.
+	\end{prop}
+	\begin{proof}
+	Consider the sequence:
+	\[ \{f_1, g_1, f_2, g_2, f_3, g_3, \ldots \} \]
+	which is Cauchy for $||\cdot||_1$. Then the sequence in Cauchy is measure. It has a subsequence $\{f_n\}$ that converges to $f$ in measure. Thus $\{f_1, g_1, \ldots \}$ must also converge to $f$ in measure. Therefore $g_n \rightarrow f$ in measure, because any subsequence of a sequence that converges to $f$ in measure must also converge to $f$ in measure. 
+	\end{proof}
+	
+	\noindent After all this work, we have finally associated for every Cauchy sequence a function $f$ in such a way that equivalent Cauchy sequences are assigned the same $f$. Note how essential defining convergence in measure and Cauchy in measure were to the process; the notion of ``in measure" is exactly what we needed to get the job done. In some sense, pointwise convergence is a much more restrictive condition when working with sequences in ISF. 
+	
+	\section{The Bochner-Lebesgue Integral}
+	
+	\begin{definition}
+	A sequence of $\{f_n\}$ in ISF is said to be \textbf{mean-Cauchy} if it is Cauchy for $||\cdot||_1$. 
+	\end{definition}
+	
+	\begin{prop}
+	Given a measure space $(X, S, \mu)$, a Banach space $B$, and a function $f : X \rightarrow B$, the following are equivalent:
+		\begin{enumerate}[label=(\alph*)]
+			\item There is a mean-Cauchy sequence of ISF that converges to $f$ in measure. 
+			\item There is a mean-Cauchy sequence of ISF that converges to $f$ a.u.
+			\item There is a mean-Cauchy sequence of ISF that converges to $f$ a.e.
+		\end{enumerate}
+	\end{prop}
+	\begin{proof}
+	$(a) \rightarrow (b)$. Let $\{f_n\}$ be a mean-Cauchy sequence that converges to $f$ in measure. Then it is Cauchy in measure, and by the Riesz-Weyl theorem (Lemma 1.15), there is a subsequence $\{f_{n_k}\}$ that is a.u.Cauchy. By Proposition 1.16, $f_{n_k} \rightarrow g$ a.u. for some $g$. By Proposition 1.17, we know that a.u. convergence implies convergence in measure, so that we have that $f_{n_k} \rightarrow g$ in measure. Now because $\{f_{n_k}\}$ is a subsequence of $\{f_n\}$, we must have that $f = g$ a.e., and therefore we see that $f_{n_k} \rightarrow f$ a.u. 
+	
+	$(b) \rightarrow (c)$. Let $\{f_n\}$ be a mean-Cauchy sequence that converges to $f$ a.u. We then have that $\{f_n\}$ is a.u.Cauchy. From the argument in Proposition 1.16, we get that $f_n \rightarrow g$ a.e. and a.u. for some $g$. Because $f_n \rightarrow g, f$ a.u., we get that by Proposition 1.17,  $f_n \rightarrow g, f$ in measure, which implies by Proposition 1.19 that $f = g$ a.e. Therefore $f_n \rightarrow f$ a.e.
+	
+	$(b) \rightarrow (a)$. By Proposition 1.17, convergence a.u. implies convergence in measure. 
+	
+	$(c) \rightarrow (b)$. Let $\{f_n\}$ be a mean-Cauchy sequence that converges to $f$ a.e. Since $\{f_n\}$ is mean-Cauchy, it is Cauchy in measure, and so by Riesz-Weyl, there is a subsequence $\{f_{n_k}\}$ that is a.u.Cauchy. By proposition 1.16, $f_{n_k} \rightarrow g$ a.u. and a.e. for some $g$. We then have that $f = g$ a.e., and therefore $f_{n_k} \rightarrow f$ a.u. 
+	
+%	Let $\{f_n\}$ be a mean-Cauchy sequence that converges to $f$ a.e. Then $f_n \rightarrow f$ for $||\cdot||_1$. We have seen before that if $f_n \rightarrow f$ for $||\cdot||_1$, then $f_n \rightarrow f$ in measure (this observation is what motivated our definition of convergence in measure). 
+	\end{proof}
+	
+	\begin{definition}
+	If $f : X \rightarrow B$ satisfies any one of the properties listed in the proposition above, then it is said to be \textbf{Bochner-Lebesgue integrable}. The set of Bochner-Lebesgue integral functions will be denoted by $\ms{L}^1(X, S, \mu, B)$. 
+	\end{definition}
+	
+	\noindent Let $\{f_n\}$ be a mean-Cauchy sequence in ISF. Then:
+	\[ \left|\left| \int f_n d\mu - \int f_m d\mu \right|\right|_B = \left|\left| \int (f_n - f_m) d\mu\right|\right|_B \leq \int ||f_n - f_m|| d\mu = ||f_n - f_m||_1 \]
+	Since $\{f_n\}$ is mean-Cauchy, we get that $||f_n - f_m||_1 \rightarrow 0$ as $n, m \rightarrow \infty$. Thus we see that $\left\{\int f_n d\mu\right\}$ is a Cauchy sequence in $B$. Since $B$ is complete, $\left\{\int f_n d\mu\right\}$ converges to an element of $B$. We can finally define:
+	
+	\begin{definition}
+	If $f \in \ms{L}^1(X, S, \mu, B)$, then we can define the \textbf{Bochner-Lebesgue integral} of $f$:
+	\[ \int f d\mu = \lim_{n \rightarrow \infty} \int f_n ~ d\mu \]
+	\end{definition}
+
+	\noindent Before we go any further we need to show that $\int f d\mu$ is well-defined. Let $\{f_n\}, \{g_n\}$ be mean-Cauchy sequences that converge to $f$ in measure. We need that $\{f_n\}, \{g_n\}$ are equivalent, i.e. $||f_n - g_n||_1 \rightarrow 0$ as $n \rightarrow \infty$. By our previous inequality, this will imply that $\left|\left|\int f_n ~ d\mu - \int g_n ~ d\mu \right|\right|_B \rightarrow 0$ as $n \rightarrow \infty$, which implies $\int f d\mu = \int g d\mu$. 
+	
+	\begin{prop}
+	Let $\{f_n\}, \{g_n\}$ be mean-Cauchy sequences in ISF. If they converge in measure to the same function $f$, then they are equivalent. 
+	\end{prop}
+	\begin{proof}
+	By Riesz-Weyl and other propositions, there are subsequences of $\{f_n\}, \{g_n\}$ that converge a.u. to $f$. It suffices to show that these subsequences are equivalent. Thus we can assume from the start that $\{f_n\}, \{g_n\}$ converge a.u. to $f$. Let $h_n = g_n - f_n$. We want $||h_n||_1 \rightarrow 0$. We know that $h_n \in \text{ISF}$, and $h_n \rightarrow 0$ a.u. Also, $\{h_n\}$ is mean-Cauchy. 
+	
+	Let $\varep > 0$. Choose $N$ such that for $m, n \geq N$:
+	\[ ||h_n - h_m||_1 < \varep \]
+	Let $E = C(h_N)$. Since $h_N \in \text{ISF}$, we know $\mu(E) < \infty$. 
+	For any $n \geq N$, consider:
+	\[ \int_{E^c} ||h_n|| ~ d\mu = \int \chi_{E^c} ||h_n|| ~ d\mu \]
+	Note $E^c$ is locally $S$-measurable, because intersecting with $E^c$ is the same as taking away $E$, i.e. set difference. We have:
+	\[ \int_{E^c} ||h_n|| ~ d\mu = \int_{E^c} ||h_n - h_N|| ~ d\mu \]
+	because $h_N$ is 0 on $E^c$. We have:
+	\[ \int_{E^c} ||h_n - h_N|| ~ d\mu \leq \int_X ||h_n - h_N|| ~ d\mu = ||h_n - h_N||_1 < \varep \]
+	Since $h_N \in \text{ISF}$, it is bounded. Let $B = ||h_N||_\infty$. Since $h_n \rightarrow 0$ a.u., there exists $F \sse E$, $\mu(E \backslash F) < \frac{\varep}{B + 1}$ such that $h_n \rightarrow 0$ uniformly on $F$. We can choose $M \geq N$ such that for $n \geq M$, $||h_n||_\infty < \frac{\varep}{\mu(F)}$. Thus:
+	\[ \int_F ||h_n|| ~ d\mu \leq \int_F \frac{\varep}{\mu(F)} ~ d\mu = \varep \]
+	We also have:
+	\begin{align*}
+	\int_{E \backslash F} ||h_n|| ~ d\mu &\leq \int_{E \backslash F} ||h_n - h_N|| ~ d\mu + \int_{E \backslash F} ||h_N|| ~ d\mu \\
+	&\leq ||h_n - h_N||_1 + \int_{E \backslash F} ||h_N||_\infty ~ d\mu \\
+	&\leq ||h_n - h_N||_1 + ||h_N|||_\infty \mu(E \backslash F) \\
+	&\leq \varep + \varep = 2 \varep
+	\end{align*}
+	Putting everything together, we have for $n \geq M$:
+	\begin{align*}
+	||h_n||_1 = \int ||h_n|| ~ d\mu &= \int_{E^c} ||h_n|| ~ d\mu + \int_{E \backslash F} ||h_n|| ~ d\mu + \int_F ||h_n|| ~ d\mu \\
+	&\leq \varep + 2\varep + \varep = 4 \varep
+	\end{align*}
+	And therefore $h_n \rightarrow 0$. 
+	\end{proof}
+	
+	\noindent Having finally achieved our goal of integration, let us go over some properties of the set of Bochner-Lebesgue integrable functions.  
+	
+	\vspace{3mm}	
+	
+	\noindent \textbf{Properties of $\ms{L}^1(X, S, \mu, B)$.} \newline
+	Let $E$ be locally $S$-measurable. If $f, g \in \ms{L}^1(X, S, \mu, B)$, then:
+	\begin{enumerate}
+	
+		\item $f + g \in \ms{L}^1(X, S, \mu, B)$, and:
+		\[ \int_E (f + g) ~ d\mu = \int_E f d\mu + \int_E g d\mu \]
+		
+		\item If $r \in \mathbb{R}$, then:
+		\[ \int_E (rf) ~ d\mu = r \int_E f d\mu \]
+		
+		\item If $f \geq 0$ a.e., then $\int_E f d\mu \geq 0$. 
+		
+		\item For $f \in \ms{L}^1(X, S, \mu, B)$, the function taking $x \mapsto ||f(x)||_B$ is in $\ms{L}^1(X, S, \mu, \mathbb{R})$, and:
+		\[ \left|\left|\int_E f d\mu \right|\right|_B \leq \int_E ||f|| ~ d\mu \]
+	
+	\end{enumerate}
+
+	\noindent From these properties, we see that $\ms{L}^1$ is a vector space, and for a fixed locally $S$-measurable set $E$, $\int_E : \ms{L}^1 \rightarrow B$ is linear. For $f \in \ms{L}^1$, set:
+	 \[ ||f||_1 = \int ||f(x)|| ~ d\mu(x) \]
+	 We will call this the $L^1$ norm. So property (4) is saying:
+	 \[ \left|\left| \int f d\mu \right| \right| \leq ||f||_1 \]
+	 But note that the $L^1$ norm is not in fact a norm on $\ms{L}^1$. This is because the norm will have value 0 on any function that is 0 a.e. To deal with this, for $f \in \ms{L}^1(X, S, \mu, B)$, let $[f]$ be the set of functions that equal $f$ a.e. Let $L^1(X, S, \mu, B)$ be the set of all the $[f]$ such that $f \in \ms{L}^1$. We can define $[f] + [g] \equiv [f + g]$, and $r[f] \equiv [rf]$. Note then $\int [f] ~ d\mu$ is well-defined, and that $L^1$ also satisfies properties (1)-(4) listed above. We want to show that the $L^1$ norm is in fact a norm on $L^1$. The hard part is showing that if $||[f]||_1 = 0$ then $[f] = [0]$, i.e. $f = 0$ a.e. To show this, first a couple observations. 
+	 
+	 \begin{lemma}
+	 If $f \in \ms{L}^1$, then $C(f)$ is $\sigma-finite$. 
+	 \end{lemma}
+	 \begin{proof}
+	 There exists a mean-Cauchy sequence of ISF $\{f_n\}$ that converges to $f$ a.e. Each $f_n = \sum_{k=1}^{k_n} b_k^n \chi_{E_k^n}$, with $\mu(E_k^n) < \infty$. We have:
+	 \[ C(f) \sse \left( \bigcup_{n, k} E_k^n \right) \cup N \]
+	 where $N$ is a null-set. 
+	 \end{proof}
+	 
+	 \begin{lemma}
+	 If $f \in \ms{L}^1(X, S, \mu, \mathbb{R})$, and if $E \in S$, $\chi_E \leq f$ a.e., then $\mu(E) < \infty$. 
+	 \end{lemma}
+	 \begin{proof}
+	 We have that $E \sse C(f)$ except for on a null-set. Thus $E$ is $\sigma$-finite, i.e. $E \sse \bigcup_{n=1}^\infty E_n$, $\mu(E_n) < \infty$. We can take intersections so that we can write $E = \bigcup E_n$. Let $F_n = \bigcup_{j=1}^n E_j$. Then $F_n \sse F_{n+1}$, $F_n \sse E$. We also have $\lim F_n = E$ and $\mu(F_n) < \infty$. Thus $\chi_{F_n} \in \text{ISF}$, and thus $\chi_{F_n} \in \ms{L}^1$. We have $\chi_{F_n} \leq f$ a.e., and so:
+	 \[ \mu(F_n) = \int \chi_{F_n} d\mu \leq \int f d\mu < \infty \]
+	 And thus we see that by continuity results for measures:
+	 \[ \mu(E) = \lim_{n \rightarrow \infty} \mu(F_n) \leq \int f d\mu < \infty \]
+	 \end{proof}
+	 
+	 \noindent Note that this lemma states that if $\chi_E \leq f$ a.e., then $\chi_E \in \text{ISF}$, so that $\chi_E \in \ms{L}^1$. 
+	 
+	 \begin{prop}
+	 If $f \in \ms{L}^1(X, S, \mu, \mathbb{R})$, $f \geq 0$, and $\int f d\mu = 0$, then $f = 0$ a.e. 
+	 \end{prop}
+	 \begin{proof}
+	 For each $n$, let $E_n = \left\{ x ~|~ f(x) > \frac{1}{n} \right\}$. We have $\chi_{E_n} \leq nf$ for all $n$, and so we have:
+	 \[ \mu(E_n) \leq n \int f d\mu = 0 \]
+	 which implies $\mu(E_n) = 0$ for all $n$. Note:
+	 \[ C(f) = \bigcup_{n=1}^\infty E_n \]
+	 and thus we have that $\mu(C(f)) = 0$. 
+	 \end{proof}
+	 
+	 \begin{corollary}
+	 The $L^1$ norm is in fact a norm on $L^1(X, S, \mu, B)$. 
+	 \end{corollary}
+	 
+	 \begin{remark}
+	 On ISF, the $L^1$ norm agrees with the norm on $\text{ISF} \backslash \text{NISF}$. So we can write:
+	 \[ \text{ISF} \backslash \text{NISF} \sse L^1 \]
+	 This is in line with our ultimate goal of thinking of $L^1(X, S, \mu, B)$ as the metric completion of $\text{ISF} \backslash \text{NISF}$ for $||\cdot||_1$. To fully validate our goal, we need to show that $L^1$ is in fact complete.
+	 \end{remark}
+	 
+	 \noindent Now that we have finally developed the Bochner-Lebesgue integral, we want to be able to tell when a given function is Bochner-Lebesgue integrable. To do this, we first examine some properties of Bochner-Lebesgue integrable functions. 
+	 
+	\begin{definition}
+		For given $f \in \ms{L}^1(X, S, \mu, B)$, the function $G \mapsto \int_G f(x) d\mu(x)$ for given $G \in \text{M}_{\text{loc}}(S)$ is called the \textbf{indefinite integral} of $f$. It will be denoted it by $\mu_f$. 
+	\end{definition}	 
+	 
+	 \begin{prop}
+	 Let $f \in \ms{L}^1(X, S, \mu, B)$. Then $f$ satisfies:
+	 	\begin{enumerate}[label=(\alph*)]
+	 		
+			\item For all $\varep > 0$, there exists $E \in S$, $\mu(E) < \infty$ such that:
+			\[ \int_{X \bs E} ||f|| ~ d\mu < \varep \]
+		
+			\item For all $\varep > 0$, there exists $\delta > 0$ such that if $E \in S$, $\mu(E) < \delta$, then $||\mu_f(E)||_B < \varep$. 		 			 		
+	 	\end{enumerate}
+	 \end{prop}
+	 \begin{proof}
+	 \begin{enumerate}[label=(\alph*)]
+	 
+	 \item Given $\varep > 0$, choose $g \in \text{ISF}$ with $||f - g||_1 < \varep$. Let $E = C(g)$. Since $g \in \text{ISF}$, $\mu(C(g)) < \infty$. We have:
+	 \begin{align*}
+	 \left|\left| \int_{X \bs E} f d\mu \right|\right| &= \left|\left| \int (f - g)  ~ d\mu \right| \right| \\
+	 	&\leq \int_{X \bs E} ||f - g|| ~ d\mu \\
+	 	&\leq ||f - g||_1 < \varep
+	 \end{align*}
+
+	 \item Given $\varep > 0$, let $g \in \text{ISF}$ such that $||f - g||_1 < \frac{\varep}{2}$. Note $||g||_\infty < \infty$. Let $\delta = \frac{\varep}{2}||g||_\infty$. Suppose $E \in S$, $\mu(E) < \delta$. Then:
+	 \begin{align*}
+	 ||\mu_f(E)|| &= \left|\left| \int_E f d\mu \right| \right| \\
+	 &\leq \left|\left| \int_E (f - g) ~ d\mu \right| \right| + \left|\left| \int_E g d\mu \right|\right| \\
+	 &\leq ||f - g||_1 + ||g||_\infty \mu(E) \\
+	 &< \frac{\varep}{2} + \frac{\varep}{2} = \varep 
+	 \end{align*}
+	 
+	 \end{enumerate}
+	 \end{proof}
+
+	\noindent The properties displayed are important enough to make them definitions.
+	
+	\begin{definition}
+	A function $f$ is \textbf{almost supported} on a set of finite measure if for all $\varep > 0$, there exists $E \in S$, $\mu(E) < \infty$ such that:
+	\[ \int_{X \bs E} ||f|| ~ d\mu < \varep \]
+	\end{definition}	
+	
+	\begin{definition}
+	For any measure $\nu$, we say that $\nu$ is \textbf{strongly absolutely continuous} with respect to $\mu$ if for all $\varep > 0$, there exists $\delta > 0$ such that if $\mu(E) < \delta$, then $||\nu(E)|| < \varep$. 
+	\end{definition}
+	
+	\noindent These notions allow us to formulate and prove the following important theorem:
+	\begin{theorem}
+	\emph{(\textbf{Lebesgue Dominated Convergence Theorem})}
+	Let $\{f_n\}$ be a sequence in $\ms{L}^1(X, S, \mu, B)$ that converges a.e. to $f$. If there is a function $g \in \ms{L}^1(X, S, \mu, \mathbb{R})$ such that for all $n$, $||f_n(x)|| \leq g(x)$ a.e., then $\{f_n\}$ is mean-Cauchy, and $f \in \ms{L}^1(X, S, \mu, B)$. 
+	\end{theorem}
+	\begin{proof}
+	Let $\varep > 0$. Since $g \in \ms{L}^1(X, S, \mu, \mathbb{R})$, it is almost supported on a set of finite measure, so there exists $E \in S$, $\mu(E) < \infty$ such that:
+	\[ \int_{X \bs E} g d\mu < \frac{\varep}{6} \]
+	Thus:
+	\begin{align*}
+	\int_{X \bs E} ||f_n - f_m|| ~ d\mu &\leq \int_{X \bs E} ||f_n|| ~ d\mu + \int_{X \bs E} ||f_m|| ~ d\mu \\
+	&\leq 2 \int_{X \bs E} g ~ d\mu < \frac{\varep}{3} 
+	\end{align*}
+	We also have that that $f_n \rightarrow f$ a.e., and $\mu(E) < \infty$. Thus by Egoroff's theorem, $f_n \rightarrow f$ a.u. on $E$. Since $\mu_g$ is strongly absolutely continuous with respect to $\mu$, we can choose $\delta > 0$ such that if $\mu(G) < \delta$, then $\mu_g(G) = \int_G g d\mu < \frac{\varep}{6}$. Because of a.u. convergence, there exists $F \sse E$ such that $\mu(E \bs F) < \delta$ and $f_n \rightarrow f$ uniformly on $F$. Thus:
+	\[ \int_{E \bs F} ||f_n - f_m|| ~ d\mu \leq 2 \int_{E \bs F} g d\mu < \frac{\varep}{3} \]
+	Finally, since uniform convergence implies uniformly Cauchy, we can choose $N$ such that for $m, n \geq N$, we have:
+	\[ ||f_n(x) - f_m(x)|| < \frac{\varep}{3} \mu(F) \]
+	for all $x \in F$. Then:
+	\[ \int_F ||f_n - f_m|| ~ d\mu < \int_F \frac{\varep}{3} \mu(F) = \frac{\varep}{3} \]
+	Putting everything together, we have for $m, n \geq N$:
+	\begin{align*}
+	||f_n - f_m||_1 &= \int_{X \bs E} ||f_n - f_m|| ~ d\mu + \int_{E \bs F} ||f_n - f_m|| ~ d\mu + \int_{F} ||f_n - f_m|| ~ d\mu \\
+	&< \frac{\varep}{3} + \frac{\varep}{3} + \frac{\varep}{3} = \varep
+	\end{align*}
+	And therefore $\{f_n\}$ is mean-Cauchy.
+	
+	To deduce that $f \in \ms{L}^1(X, S, \mu, B)$, note that for all $\frac{1}{n}$, we can find $g_n \in \text{ISF}$ such that $||f_n - g_n||_1 < \frac{1}{n}$. We can see that $\{g_n\}$ is a mean-Cauchy sequence. Furthermore, by the inequality:
+	\[ ||f - g_n||_1 \leq ||f - f_n||_1 + ||f_n - g_n||_1 \]
+	we get that $g_n \rightarrow f$ for $||\cdot||_1$. We have seen that convergence for $||\cdot||_1$ implies convergence in measure (in fact, this is what motivated the definition of convergence in measure). Therefore $f \in \ms{L}^1(X, S, \mu, B)$. 
+	\end{proof}
+	
+	\begin{corollary}
+	If $f \in \ms{M}(X, S, \mu, B)$, and if there is $g \in \ms{L}^1(X, S, \mu, \mathbb{R})$ with $||f(x)|| \leq g(x)$ a.e., then $f \in \ms{L}^1(X, S, \mu ,B)$. 
+	\end{corollary}
+	\begin{proof}
+	Let $\{f_n\}$ be a sequence of MSF that converges to $f$ a.e. Set:
+	\[ h_n(x) = \begin{cases}
+				f_n(x) & \text{if } ||f_n(x)|| \leq 2g(x) \\
+				0 & \text{if } ||f_n(x)|| > 2g(x) 
+				\end{cases} \]
+	Note this new sequence $\{h_n\}$ is in MSF, and $h_n \rightarrow f$ a.e., and $||h_n(x)|| \leq 2g(x)$. We have that the last inequality implies $C(h_n) \sse C(g)$ for all $n$. As in the proof of Lemma 1.24, we can obtain a sequence of subsets $\{F_n\}$ of finite measure that increases up to $C(h_n)$. This implies that the sequence $\{h_nF_n\}$ is in ISF. Furthermore, the sequence converges pointwise to $h_n$. We therefore have that $h_n$ is integrable for all $n$. Therefore by the Lebesgue Dominated Convergence Theorem, $f \in \ms{L}^1(X, S, \mu, B)$. 
+	\end{proof}
+	
+	\begin{corollary}
+	If $x \mapsto ||f(x)||_B$ is in $\ms{L}^1$, then $f \in \ms{L}^1$. 
+	\end{corollary}
+	
+	\begin{theorem}
+	\emph{(\textbf{Monotone Convergence Theorem})}
+	Let $\{f_n\}$ be a sequence in $\ms{L}^1(X, S, \mu, \mathbb{R})$. If $f_n \geq f_m$ a.e. for $n \geq m$, and if there is $c \in \mathbb{R}$ such that $\int f_n ~ d\mu \leq c$ for all $n$, then $\{f_n\}$ is a mean-Cauchy sequence, and there is $f \in \ms{L}^1$ such that $f_n \rightarrow f$ a.e., and $\int f d\mu = \lim_{n \rightarrow \infty} \int f_n ~ d\mu$. 
+	\end{theorem}
+	\begin{proof}
+	For $n \geq m$, we have $f_n \geq f_m$ a.e., so that $c \geq \int f_n ~ d\mu \geq \int f_m ~ d\mu$. We thus see that $\{\int f_n ~ d\mu\}$ is a bounded monotone sequence of real numbers, and so it has a least upper bound, to which it converges. Thus $\{\int f_n ~ d\mu\}$ is a Cauchy sequence. For $n \geq m$:
+	\[ ||f_n - f_m||_1 = \int |f_n - f_m| ~ d\mu = \int f_n ~ d\mu - \int f_m ~ d\mu \]
+	It follows that $\{f_n\}$ is mean-Cauchy. We therefore have a subsequence that converges a.e. to some $f$. Because $\{f_n\}$ is monotone, the sequence itself must also converge to $f$ a.e. We then have:
+	\[ \lim_{n \rightarrow \infty} \int f_n ~ d\mu = \int f d\mu \]
+	\end{proof}		 
+	
+	\begin{remark}
+	If $\{f_n\}$ is a monotone sequence as above, and if $f_n \rightarrow f$ a.e., buth there does not exist an upper bound on $\int f_n ~ d\mu$, then we say that $\int f d\mu = \infty$. 
+	\end{remark}
+	
+	\begin{definition}
+	The $\textbf{liminf}$ of a sequence of functions $\{f_n\}$, $f_n \geq 0$ a.e., is defined by the following procedure. First define:
+	\[ g_{nm} = f_n \wedge f_{n+1} \wedge \cdots \wedge f_m \]
+	Note $g_{nm}$ is measurable if $\{f_n\}$ is measurable. For fixed $n$, $g_{nm} \downarrow$ as $m \rightarrow \infty$. But $g_{nm} \geq 0$ a.e. So for fixed $n$, $g_{nm} \downarrow$ a.e. to some function, call it $g_n$. Think of $g_n$ as $f_n \wedge f_{n+1} \wedge \cdots$. Now as $n \rightarrow \infty$, we have $g_n \uparrow$, and since the $g_n$ are bounded above (possibly by a function that is $\infty$ a.e.), we get that $\{g_n\}$ converges a.e. to some function, call this $\liminf \{f_n\}$. 
+	\end{definition}
+	
+	
+	\begin{lemma}
+	\emph{(\textbf{Fatou's Lemma})}
+	Let $\{f_n\}$ be a sequence in $\ms{L}^1(X, S, \mu, B)$. Let $f_n \geq 0$ a.e. for all $n$. Then:
+	\[ \int \liminf \{f_n\} ~ d\mu \leq \liminf \left\{ \int f_n ~ d\mu \right\} \]
+	\end{lemma}
+	\begin{proof}
+	If $\liminf \left\{ \int f_n ~ d\mu \right\} = \infty$, then the inequality is true. So assume $ \liminf \left\{ \int f_n ~ d\mu \right\} < \infty$. For any $m \geq n$, we have $g_n \leq f_m$, so that $\int g_n ~ d\mu \leq \int f_m ~ d\mu$. This then implies $\int g_n ~ d\mu \leq \liminf \left\{ \int f_m ~ d\mu \right\}$. We also have by definition that $g_n \uparrow \liminf f_n$. Thus by the Monotone Convergence theorem, we have:
+	\[ \int \liminf f_n ~ d\mu \leq \liminf \int f_n ~ d\mu \]
+	\end{proof}
+	
+	\noindent Here we see a nice application of Fatou's Lemma. 
+	
+	\begin{prop}
+	Let $\{f_n\}$ be a sequence in $\ms{L}^1(X, S, \mu, B)$, and let $f_n \rightarrow f$ a.e., and suppose there is a constant $c$ such that $||f_n||_1 \leq c$ for all $n$. Then $f \in \ms{L}^1$, and $||f||_1 \leq c$. 
+	\end{prop}
+	\begin{proof}
+	Note because of convergence:
+	\[ ||f(\cdot)||_B = \liminf \{||f_n(\cdot)||_B\} \]
+	So by Fatou's Lemma:
+	\[ \int ||f(x)|| ~ d\mu(x) \leq \liminf \left\{ \int ||f_n(x)|| ~ d\mu(x) \right\} \leq c \]
+	Thus we see that $f$ is Lebesgue-integrable, because $\int ||f|| ~ d\mu$ is finite. 
+	\end{proof}
+	
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	\chapter{Functional Analysis}
+	At this time we will jump to an unrelated topic and go over the basics of functional analysis. We will use the theory developed in this chapter in future chapters. 
+	
+	\section{Linear Operators}
+	
+	Let $V, W$ be normed vector spaces. As normed vector spaces, we can put on $V, W$ the topologies induced by the respective norms. Let $T : V \rightarrow W$ be a linear operator. We can ask whether $T$ is continuous, say at 0. 
+	We have that $T$ is continuous at 0 implies:
+	\[ T^{-1}(\ovl{B_W}(0, 1)) \supseteq \ovl{B_V}(0, r) \]
+	for some $r > 0$. In other words, this says if $v \in V$ and $||v|| \leq r$, then $||Tv|| \leq 1$. We can divide by $r$ and say if $||v|| \leq 1$, then $||Tv|| \leq \frac{1}{r}$. 
+	
+	\begin{definition}
+	The norm of a linear operator is defined as:
+	\[ ||T|| = \sup \bigg\{ ||Tv|| ~\big|~ ||v|| \leq 1 \bigg\} \]
+	We call this the ``\textbf{operator norm}". We will show soon that it is in fact a norm. 
+	\end{definition}
+	
+	\noindent So if $T$ is continuous at 0, then $||T|| < \infty$. Now for $v_1, v_2 \in V$:
+	\[ ||Tv_1 - Tv_2|| = ||T(v_1 - v_2)|| \leq ||T|| \cdot ||v_1 - v_2|| \]
+	Thus if $||T|| < \infty$, we see that actually $T$ is Lipschitz with Lipschitz constant $||T||$. So we get that $T$ is uniformly continuous. We thus get the following theorem:
+	
+	\begin{theorem}
+	Let $T : V \rightarrow W$ be a linear operator from normed vector space $V, W$. Then $T$ is continuous at 0 if and only if $||T|| < \infty$. 
+	\end{theorem}
+	
+	\begin{definition}
+	Given $T : V \rightarrow W$, we say that $T$ is ``\textbf{bounded}" if $||T|| < \infty$. 
+	\end{definition}
+	
+	\begin{definition}
+	For normed vector spaces $V, W$, we define $\ms{B}(V, W)$ as the \textbf{set of bounded linear operators} from $V$ to $W$.
+	\end{definition}
+	
+	\begin{prop}
+	The set $\ms{B}(V, W)$ is a normed vector space for the pointwise operations. 
+	\end{prop}
+	\begin{proof}
+	Let $S, T \in \ms{B}(V, W)$. Let $v \in V$. We have:
+	\[ ||(S + T)(v)|| = ||Sv + Tv|| \leq ||Sv|| + ||Tv|| \leq ||S|| \cdot ||v|| + ||T|| \cdot ||v|| = (||S|| + ||T||)||v|| \]
+	Thus $||S + T|| \leq ||S|| + ||T||$, so that $S + T \in \ms{B}(V, W)$. Note we also see that the operator norm satisfies the triangle inequality. Given $r$, we have:
+	\[ ||(rT)(v)|| = ||r(Tv)|| = |r|\cdot||Tv|| \leq |r| \cdot ||T|| \cdot ||v|| \]
+	So $||rT|| \leq |r| \cdot ||T||$. Thus $rT \in \ms{B}(V, W)$. It also isn't too hard to show that in fact $||rT|| = |r| \cdot ||T||$. 
+	
+	Now if $||T|| = 0$, then $||Tv|| \leq 0 \cdot ||v||$ for all $v \in V$, and thus $Tv = 0$ for all $v \in V$, and so $T = 0$. We thus see that the operator norm is in fact a norm. 
+	\end{proof}
+	
+	\begin{prop}
+	Let $V, W$ be normed vector spaces. If $W$ is a Banach space (i.e. it is complete), then $\ms{B}(V, W)$ is Banach space (i.e. it is also complete).
+	\end{prop}
+	\begin{proof}
+	Let $\{T_n\}$ be a Cauchy sequence in $\ms{B}(V, W)$. For any $v \in V$, we have:
+	\[ ||T_nv - T_mv|| = ||(T_n - T-m)v|| \leq ||T_n - T_m|| \cdot ||v|| \]
+	We thus see that $\{T_n v\}$ is a Cauchy sequence in $W$ for all $v \in V$.Since $W$ Is complete, $\{T_n v\}$ converges. Define a function $T : V \rightarrow W$, by $Tv = \lim T_n v$. We have:
+	\[ T(v_1 + v_2) = \lim T_n(v_1 + v_2) = \lim T_nv_1 + \lim T_nv_2 = Tv_1 + Tv_2 \]
+	And for a given scalar $r$, we have:
+	\[ T(rv) = \lim T_n(rv) = \lim r(T_nv) = r \lim T_nv = r(Tv) \]
+	Thus $T$ is linear.
+	
+	Since $\{T_n\}$ is Cauchy, there is a constant $K$ such that $||T_n|| \leq K$ for all $n$. We then have:
+	\[ ||Tv|| \leq ||Tv - T_nv|| + ||T_nv|| \leq \varep + K||v|| \]
+	for all $n$ large enough. Thus $||T|| \leq K$, and thus $T \in \ms{B}(V, W)$. 
+	
+	The last thing we need to show is that $T_n \rightarrow T$. Let $\varep > 0$. There exists $N$ such that for all $m, n \geq N$, we have:
+	\[ ||T_n - T_m|| < \frac{\varep}{2} \]
+	and for each $v \in V$, there exists $m_v \geq N$ such that:
+	\[ ||Tv - T_{m_v}v|| < \frac{\varep}{2} \]
+	We then have that for all $n \geq N$, for all $||v|| \leq 1$:
+	\[ ||Tv - T_n v|| \leq ||Tv - T_{m_v}v|| + ||T_{m_v}v - T_nv|| < \frac{\varep}{2} + ||T_{m_v} - T_n|| \cdot ||v|| < \frac{\varep}{2} + \frac{\varep}{2} = \varep \]
+	\end{proof}
+	
+	\begin{example}
+	Consider $L^1(X, S, \mu, B)$. Define $I : L^1 \rightarrow B$ by:
+	\[ If = \int f  d\mu \]
+	We have:
+	\[ ||\int f d\mu ||_B \leq ||f||_1 \]
+	Thus $||I|| \leq 1$ (actually, equality holds).
+	\end{example}
+
+	\begin{example}
+	Let $B, C$ be Banach spaces, and let $T \in \ms{B}(B, C)$. For $f \in L^1(X, S, \mu, B)$, define $Tf$ by:
+	\[ (Tf)(x) = T(f(x)) \]
+	So $Tf : X \rightarrow C$. Note $f \in \ms{L}^1$, so there is a mean Cauchy sequence of ISF such that $f_n \rightarrow f$ a.e. We can then show that $\{Tf_n\}$ is a sequence of MSF, and that $Tf$ is measurable. Also:
+	\[ ||(Tf)(x)|| \leq ||T|| \cdot ||f(x)|| \]
+	Thus by the corollary to the LDCT, we get that $Tf \in L^1(X, S, \mu, C)$. Also:
+	\[ ||Tf||_1 \leq ||T|| \cdot ||f||_1 \]
+	We can then define $\tilde{T} : L^1(X, S, \mu, B) \rightarrow L^1(X, S, \mu, C)$ by:
+	\[ \tilde{T}(f) = Tf \]
+	We have that $\tilde{T} \in \ms{B}(L^1(X, B), L^1(X, C))$
+	\end{example}	
+	
+	\begin{example}
+	Let $V, W, Z$ be normed vector spaces, and let $Z$ be a Banach space. Let $T \in \ms{B}(V, W), S \in \ms{B}(W, Z)$. Define $ST : V \rightarrow Z$ by $(ST)(v) = S(Tv)$. We have:
+	\[ ||(ST)(v)|| = ||S(Tv)|| \leq ||S|| \cdot ||Tv|| \leq ||S|| \cdot ||T|| \cdot ||v|| \]
+	So $ST \in \ms{B}(V, Z)$, and $||ST|| \leq ||S|| \cdot ||T||$ (not necessarily equal). 
+	
+	In particular, consider $\ms{B}(V, V) = \ms{B}(V)$. If $S, T \in \ms{B}(V)$, then $ST \in \ms{B}(V)$. So $\ms{B}(V)$ is an algebra with an identity (the identity operator). If $V$ is complete, so is $\ms{B}(V)$. 
+	\end{example}
+	
+	\begin{definition}
+	A \textbf{Banach algebra} is an algebra that is a Banach space over $\mathbb{R}$ or $\mathbb{C}$, such that $||ab|| \leq ||a|| \cdot ||b||$ for all $a, b$ in the algebra.
+	\end{definition}
+	
+	\noindent We thus see that $\ms{B}(V)$ is a Banach algebra.
+	
+	\begin{definition}
+	Given a normed vector space $V$ over $\mathbb{R}$ or $\mathbb{C}$ (denote it as $F$), consider $\ms{B}(V, F)$ -- the continuous linear functions on $V$. We call this space the \textbf{dual} of $V$, and denote it as $V^*$. Note since $F$ is complete, we have that $V^*$ is a Banach space. 
+	\end{definition}
+
+	\noindent We will see later many natural examples of dual spaces.
+	
+	\section{Quotient Spaces}
+	
+	Let $V$ be a normed vector space. Let $W$ be a subspace of $V$. We can form the quotient vector space:
+	\[ V / W = \{v + W ~|~ v \in V \} \]
+	Define the quotient map $\pi : V \rightarrow V / W$ by:
+	\[ \pi(v) = v + W \]
+	Define a seminorm on $V / W$ by:
+	\[ ||\pi(v)|| = \inf \bigg\{ ||v - w|| ~\big|~ w \in W \bigg\} \]
+	We can think of $||\pi(v)||$ as the distance from $v$ to the subspace $W$. 
+	
+	\begin{prop}
+	The function we defined on $V / W$ is in fact a seminorm. 
+	\end{prop}
+	\begin{proof}
+	Given $\varep > 0$, $v_1, v_2 \in V$, we can find $w_1, w_2 \in W$ such that:
+	\[ ||v_j - w_j|| < ||\pi(v_j)|| + \varep \]
+	We thus have:
+	\[ ||\pi(v_1 + v_2)|| \leq ||(v_1 + v_2) - (w_1 + w_2)|| \leq ||v_1 - w_1|| + ||v_2 - w_2|| \leq ||\pi(v_1)|| + ||\pi(v_2)|| + 2\varep \]
+	We thus have that the triangle inequality is satisfied.
+	
+	Given $r \neq 0$ a scalar, we have:
+	\begin{align*}
+	||\pi(rv)|| &= \inf \bigg\{ ||rv - w|| ~\big|~ w \in W \bigg\} \\
+	&= \inf \bigg\{ r ||v - w|| ~\big|~ w \in W \bigg\} \\
+	&= r \inf \bigg\{ ||v - w|| ~\big|~ w \in W \bigg\} \\
+	&= r ||\pi(v)||
+	\end{align*}
+	And if $r = 0$, then $||\pi(rv)|| = 0 = r ||\pi(v)||$. 
+	\end{proof}
+	
+	\begin{prop}
+	$||\cdot||_{V / W}$ is a norm if and only if $W$ is closed.
+	\end{prop}
+	\begin{proof}
+	Suppose $W$ is closed. If $||\pi(v)|| = 0$, then there exists $\{w_n\} \sse W$ such that $||v - w_n|| \rightarrow 0$, and thus $v \in \bar{W} = W$, and thus $\pi(V) = 0$. 
+	
+	If $W$ is not closed, then there exists a limit point $v$ of $W$, $v \notin W$. Note then that $\pi(v) \neq 0$. However, we can obtain a sequence $\{w_n\} \sse W$ such that $||v - w_n|| \rightarrow 0$, which means that $||\pi(v)|| = 0$. 
+	\end{proof}
+	
+	\begin{remark}
+	Note that from the definition of $||\pi(v)||$, we have that $||\pi(v)|| \leq ||v||$ for all $v \in V$, We thus see that $\pi$ is a bounded linear operator, and that $||\pi|| \leq 1$.
+	\end{remark}
+	
+	\begin{remark}
+	If $z \in V / W$, then:
+	\[ ||z||_{V/W} = \inf \bigg\{ ||v|| ~\big|~ \pi(v) = z \bigg\} \]
+	This is because if $\pi(v) = z$, then $\pi(v - w) = z$ for all $w \in W$.
+	\end{remark}
+	
+	\begin{lemma}
+	$\pi : V \rightarrow V / W$ is an open function. In fact, for any $r > 0$:
+	\[ \pi(B_V(0, r)) = B_{V/W}(0, r) \]
+	\end{lemma}
+	\begin{proof}
+	First, if $||v|| < r$, then $||\pi(v)|| \leq ||v|| < r$. Thus:
+	\[ \pi(B_V(0, r)) \sse B_{V/W}(0, r) \]
+	Conversely, if $z \in V / W$, $||z|| < r$, choose $\varep > 0$ such that $||z|| + \varep < r$. Choose $v \in V$, $\pi(v) = z$, $||v|| \leq ||z|| + \varep < r$. So $v \in B_V(0, r)$. Thus:
+	\[ B_{V/W}(0, r) \sse \pi(B_V(0, r)) \]
+	\end{proof}
+	
+	\noindent We now may ask under what conditions is $V / W$ a Banach space? It turns out that if $V$ is a Banach space and $W$ is a closed subspace, then $V/W$ is a Banach space. To show this, we need a lemma from real analysis.
+	
+	\begin{definition}
+	Let $(M, d)$ be a metric space. A sequence $\{x_n\}$ is ``\textbf{rapidly Cauchy}" if:
+	\[ \sum_{n=1}^\infty d(x_n, x_{n+1}) < \infty \]
+	Equivalently, $\{x_n\}$ is rapidly Cauchy if there is a sequence $\{\varep_n\} \sse \mathbb{R}^+$ with:
+	\[ \sum \varep_n < \infty \]
+	and $d(x_n, x_{n+1}) < \varep_n$ for all $n$.
+	\end{definition}
+	
+	\begin{lemma}
+	Every Cauchy sequence has a subsequence that is rapidly Cauchy.
+	\end{lemma}
+	\begin{proof}
+	Let $\{x_n\}$ be a Cauchy sequence. Choose $\varep_n$ so that $\sum \varep_n < \infty$. Three exists $N_1$ such that for all $m, n \geq N_1$, we have $d(x_m, x_n) < \varep_1$. Let $y_1 = x_{N_1}$. There exists $N_2 > N_1$ such that for all $m, n \geq N_2$, we have $d(x_m, x_n) < \varep_2$. Let $y_2 = x_{N_2}$. Suppose we have $N_1 < \cdots <  N_k$and $y_1, \ldots, y_k$. There exists $N_{k+1} > N_k$ such that for all $m, n \geq N_{k+1}$, we have $d(x_m, x_n) < \varep_{k+1}$. Let $y_{k+1} = x_{N_{k+1}}$. We have that $\{y_k\}$ is a rapidly Cauchy subsequence.
+	\end{proof}
+	
+	\begin{theorem}
+	If $V$ is a Banach space and $W$ a closed subspace, then $V / W$ is a Banach space.
+	\end{theorem}
+	\begin{proof}
+	It suffices to show that every rapidly Cauchy sequence converges, because every Cauchy sequence has a rapidly Cauchy subsequence, and if a subsequence of a Cauchy sequence converges, then the Cauchy sequence itself converges to the same limit.
+	
+	So let $\{z_n\} \sse V / W$ be rapidly Cauchy. Then:
+	\[ ||z_{n+1} - z_n|| < \varep_n \]
+	for all $n$, for some $\{\varep_n\}$ with $\sum \varep_n < \infty$.
+	Choose $v_1$ such that $\pi(v_1) = z_1$. Choose for $n \geq 1$, $u_n \in V$ such that $\pi(u_n) = z_{n+1} - z_n$, and $||u_n|| < \varep_n$. Let $v_n$, $n > 1$ be:
+	\[ v_n = u_1 + u_2 + \cdots + u_n \]
+	Then for $n > 1$, we have $||v_{n+1} - v_n|| = ||u_{n+1}|| < \varep_{n+1}$. So $\{v_n\}$ is rapidly Cauchy. Because $V$ is complete, we have that $v_n \rightarrow v \in V$. We have:
+	\[ \pi(v_n) = z_1 + (z_2 - z_1) + \cdots +(z_{n+1} - z_n) = z_{n+1} \]
+	Note $\pi$ is bounded, and thus continuous. We have:
+	\[ \lim z_{n+1} = \lim \pi(v_n) = \pi \left(\lim v_n \right) = \pi(v) \]
+	and therefore we see that $z_n \rightarrow \pi(v)$.
+	\end{proof}
+	
+	\section{Baire Category Theorem and Consequences}
+	
+	We start off with the central theorem of this section.
+	
+	\begin{theorem}
+	\emph{(\textbf{Baire Category Theorem})}
+	Let $(M, d)$ be a complete metric space, and let $\{D_n\}_{n=1}^\infty$ be a sequence of dense open sets in $M$. Then $\bigcap_{n=1}^\infty D_n$ is dense in $M$.
+	\end{theorem}
+	\begin{proof}
+	We must show that for all nonempty open sets $U$ of $M$, we have:
+	\[ \bigg( \bigcap_{n=1}^\infty D_n \bigg) \cap U \neq \varnothing \]
+	Since $D_1$ is dense, we have that $D_1 \cap U \neq \varnothing$, and since both sets are open, we can obtain $x_1 \in M$, $0 < r_1 < 2^{-1}$ such that $B(x_1, r_1) \in D_1 \cap U$. Now consider $D_2 \cap B(x_1, r_1)$. This intersection is also nonempty and open, so that we can pick $x_2 \in M$, $0 < r_2 < 2^{-2}$ such that $\bar{B}(x_2, r_2) \sse D_1 \cap B(x_1, r_1)$. Now suppose we have picked $x_1, \ldots, x_k$, $r_1, \ldots, r_k$ in the given pattern. We then have that $D_{k+1} \cap B(x_k, r_k) \neq \varnothing$, so that as before, we can pick $x_{k+1} \in M$, $0 < r_{k+1} < 2^{-(k+1)}$ such that:
+	\[ \bar{B}(x_{k+1}, r_{k+1}) \sse D_{k+1} \cap B(x_k, r_k) \]
+	Now consider the sequence $\{x_n\}$ that we have picked. For any given $N$, we have $x_n, x_m \in B(x_N, r_N)$ for $n, m \geq N$. Now since $r_N < 2^{-N}$, we see that $\{x_n\}$ is Cauchy. Because $M$ is complete, we get that $\{x_n\}$ converges to some point $x \in M$. Now for $N > 1$, we have $x_n \in B(x_N, r_N)$ for all $n \geq N$. This implies $x \in \bar{B}(x_N, r_N)$ for all $N > 1$. We then have:
+	\[ x \in \bar{B}(x_N, r_N) \sse D_{N-1} \cap B(x_{N-1}, r_{N-1}) \sse D_{N-1} \cap B(x_1, r_1) \sse D_{N-1} \cap U \]
+	for all $N > 1$. We can rewrite this as $x \in D_N \cap U$ for all $N$. We therefore have:
+	\[ x \in \bigg( \bigcap_{n=1}^\infty D_n \bigg) \cap U \neq \varnothing \]
+	\end{proof}
+	
+	\begin{corollary}
+	Let $(M, d)$ be a complete metric space. Then $M$ is not the countable union of nowhere dense sets.
+	\end{corollary}
+	\begin{proof}
+	Let $\{E_n\}_{n=1}^\infty$ be a sequence of nowhere dense sets in $M$. Consider $\{\bar{E_n}^c\}_{n=1}^\infty$. Because each $E_n$ is nowhere dense, we have that by definition, $\bar{E_n}$ has empty interior, which implies that the closure of $\bar{E_n}^c$ is all of $M$. I.e., $\bar{E_n}^c$ is dense in $M$ for all $n$. By the Baire Cateogry Theorem, we have that:
+	\[ \bigcap_{n=1}^\infty \bar{E_n}^c \]
+	is dense in $M$, which implies that the set is nonempty. This implies:
+	\[ X \neq \bigg( \bigcap_{n=1}^\infty \bar{E_n}^c \bigg)^c = \bigcup_{n=1}^\infty \bar{E_n} \]
+	Finally, note:
+	\[ \bigcup_{n=1}^\infty E_n \sse \bigcup_{n=1}^\infty \bar{E_n} \]
+	\end{proof}
+	
+	\begin{remark}
+	The Baire Category Theorem is a topological statement. Therefore any topological space that is homeomorphic to a complete metric space will satisfy the conditions given in the theorem. 
+	\end{remark}
+	
+	\noindent Inspired by this theorem, we make a definition.
+	
+	\begin{definition}
+	Let $X$ be a topological space. We say that a set $E \sse X$ is \textbf{of the first category} if it is the countable union of nowhere dense sets. Otherwise, we say that $E$ is \textbf{of the second category}. Another name used to denote a set of the first category is \textbf{meager}.
+	\end{definition}
+	
+	\noindent We now shift our attentions to three seemingly unrelated theorems. We will see how the Baire Category Theorem is used in each of the proofs.
+	
+	\begin{theorem}
+	\emph{(\textbf{Open Mapping Theorem})}
+	Let $B, C$ be Banach spaces, and let $T \in \ms{B}(B, C)$. If $T$ is surjective, then $T$ is open. 
+	\end{theorem}
+	\begin{proof}
+	To prove a map $f$ between metric spaces $X, Y$ is open, it suffices to show that for any open ball $B(x, r) \sse X$, there exists an open ball $B(f(x), q) \sse Y$ such that:
+	\[ T(B(x, r)) \supseteq B(f(x), q) \]
+	In our present situation, we are working with normed linear spaces. Thus we can scale and shift, which means it suffices to show that for the open ball $B(0, 1) \sse B$, there exists $B(0, r) \sse C$ such that:
+	\[ T(B(0, 1)) \supseteq B(0, r) \]
+	Let $B_t = B(0, t) \sse B$. Note:
+	\[ B = \bigcup_{n=1}^\infty B_n \]
+	Since $T$ is surjective, we have:
+	\[ C = T(B) = \bigcup_{n=1}^\infty T(B_n) \]
+	Note $C$ is complete. The map $y \mapsto ny$ is a homeomorphism from $C$ to itself, which maps $T(B_1)$ to $T(B_n)$. Therefore by the Baire Category Theorem, we have that $T(B_1)$ cannot be nowhere dense. Thus there exists $B(y_0, 4r) \sse \ovl{T(B_1)}$. Choose $y_1 = Tx_1 \in T(B_1)$ such that $||y_1 - y_0|| < 2r$, then $B(y_1, 2r) \sse \ovl{T(B_1)}$. Now if $||y|| < 2r$, we have:
+	\[ y = Tx_1 + (y - y_1) \]
+	Note $y_1 - (y - y_1) = y$, so that $y - y_1 \in B(y_1, 2r)$. Thus:
+	\[ y \in Tx_1 + B(y_1, 2r) \sse Tx_1 + \ovl{T(B_1)} \sse \ovl{T(x_1 + B_1)} \sse \ovl{T(B_2)} \]
+	We can divide by 2 to obtain if $||y|| < r$, then $y \in \ovl{T(B_1)}$. 
+	
+	Our goal now is to replace the $\ovl{T(B_1)}$ by $T(B_1)$, because then we would be done. First note that for $||y|| < r2^{-n}$, we have $y \in \ovl{T(B_{2^{-n}})}$. So suppose $||y|| < r / 2$, we then have $x_1 \in B_{1/2}$ such that $||y - Tx_1|| < r/4$. Note then that $y - Tx_1 \in \ovl{T(B_{2^{-2}})}$. We can then find $x_2 \in B_{2^{-2}}$ such that $||y - Tx_1 - Tx_2|| < r2^{-3}$. Proceeding as so, we can find a sequence $\{x_n\}$ such that for all $n$, we have:
+	\[ ||y - Tx_1 - \cdots - Tx_n|| < r2^{-(n+1)} \]
+	We thus have:
+	\[ y = \sum_{n=1}^\infty Tx_n = T\bigg(\sum_{n=1}^\infty x_n \bigg) \]
+	Note since $B$ is complete, the series $\sum_{n=1}^\infty x_n$ converges to a point $x \in B$. We thus have $y = Tx$. Furthermore, we have:
+	\[ ||x|| \leq \sum_{n=1}^\infty ||x_n|| < \sum_{n=1}^\infty 2^{-n} = 1 \]
+	Therefore for all $||y|| < r/2$, we have $y \in T(B_1)$, as needed. 
+	\end{proof}
+	
+	\begin{corollary}
+	Let $B, C$ be Banach spaces and let $T \in \ms{B}(B, C)$. If $T$ is bijective, then $T$ is an isomorphism.
+	\end{corollary}
+	\begin{proof}
+	Since $T$ is surjective, it is open. Since $T$ is bijective, $T$ is open implies that $T^{-1}$ is continuous.
+	\end{proof}
+	
+	\noindent For our next theorem, we first need to make a few definitions.
+	
+	\begin{definition}
+	Given normed vector spaces $X, Y$ and $T : X \rightarrow Y$ a linear operator, we define the \textbf{graph} of $T$ as so:
+	\[ \Gamma(T) = \{(x, y) \in X \times Y ~|~ y = Tx \} \]
+	Note $\Gamma(T)$ is a subspace of $X \times Y$.
+	\end{definition}
+	
+	\begin{definition}
+	A linear operator $T : X \rightarrow Y$ between normed linear spaces is closed if $\Gamma(T)$ is a closed subspace of $X \times Y$. 
+	\end{definition}
+	
+	\noindent We can see that if $T$ is continuous, then $T$ is closed, because if $\{(x_n, y_n)\}$ is a sequence in $\Gamma(T)$ that converges to $(x, y)$, then $\{x_n\}$ is a sequence in $X$ that converges to $x$ and $\{y_n\}$ is a sequence in $Y$ that converges to $y$. By the continuity of $T$, we have:
+	\[ Tx = T\left(\lim x_n \right) = \lim Tx_n = \lim y_n = y \]
+	The next theorem shows that if $X, Y$ are complete, then the converse is true.
+	
+	\begin{theorem}
+	\emph{(\textbf{Closed Graph Theorem})}
+	Let $X, Y$ be Banach spaces and $T : X \rightarrow Y$ a linear operator. If $T$ is closed, then $T$ is bounded.
+	\end{theorem}
+	\begin{proof}
+	Let $\pi_1, \pi_2$ be the projections from $\Gamma(T)$ to $X, Y$ respectively. I.e., $\pi_1(x, Tx) = x$ and $\pi_2(x, Tx) = Tx$. Note $\pi_1 \in \ms{B}(\Gamma(T), X)$ and $\pi_2 \in \ms{B}(\Gamma(T), Y)$. Note because $X, Y$ are complete, we have that $X \times Y$ is complete, and thus since $T$ is closed, we get that $\Gamma(T)$ is complete. Note $\pi_1$ is a bijection from $\Gamma(T)$ to $X$. By the corollary to the Open Mapping Theorem, we get that $\pi_1^{-1}$ is bounded. Note that $T = \pi_2 \circ \pi_1^{-1}$. Therefore $T$ is the composition of bounded maps, and thus $T$ itself is bounded. 
+	\end{proof}
+	
+	\noindent Moving on, let $\Lambda$ be an index set. For each $\lambda \in \Lambda$, let $Y_\lambda$ be a Banach space (over $\mathbb{R}$). Form (notice the prime):
+	\[ Y = \prod'_{\lambda \in \Lambda}  Y_\lambda = \bigg\{ y : \Lambda \rightarrow \bigcup Y_\lambda ~\big|~ y(\lambda) \in Y_\lambda ~ \forall \lambda, \sup \big\{||y(\lambda)|| ~|~ \lambda \in \Lambda \big\} < \infty \bigg\} \]
+	For $y \in Y$, set $||y|| = \sup \big\{ ||y(\lambda)|| ~|~ \lambda \in \Lambda \big\}$. This gives a norm on the vector space $Y$. Since each $Y_\lambda$ is complete, we can show that $Y$ is complete. We use this construction in the next theorem.
+	
+	\begin{theorem}
+	\emph{(\emph{Principle of Uniform Boundedness})}
+	Let $V, W$ be Banach spaces. For some index set $\Lambda$, for each $\lambda \in \Lambda$, let $T_\lambda \in \ms{B}(V, W)$. Suppose for each $v \in V$, there is a constant $c_v$ such that:
+	\[ ||T_\lambda v|| \leq c_v \]
+	for all $\lambda \in \Lambda$. 
+	Then there is a constant $c$ such that:
+	\[ ||T_\lambda|| \leq c \]
+	for all $\lambda \in \Lambda$.
+	\end{theorem}
+	\begin{proof}
+	For each $\lambda$, let $Y_\lambda = W$, and form $Y = \prod ' Y_\lambda$. Define $T: V \rightarrow Y$ by:
+	\[ Tv = (T_\lambda v)_{\lambda \in \Lambda} \]
+	Note by the boundedness condition in the statement of the theorem, $T$ does map into $Y$. For all $\lambda \in \Lambda$, and for all $v \in V$, we have:
+	\[ ||T_\lambda v|| \leq \sup \big\{||T_\lambda v|| ~|~ \lambda \in \Lambda \big\} = ||Tv|| \]
+	This implies that $||T_\lambda|| \leq ||T||$ for all $v \in V$. Therefore to prove the theorem, it suffices to show that $T$ is bounded. 
+	
+	Since $V$ and $Y$ are both complete, by the Closed Graph Theorem, it suffices to show that $T$ is closed. Let $\{(v_n, Tv_n)\}$ be a sequence in $\Gamma(T)$ that converges to $(v, y) \in V \times Y$. Note then $v_n \rightarrow v$ and $Tv_n \rightarrow y$. We need to show that $y = Tv$. First note that for all $\lambda$, we have $(Tv_n)_\lambda \rightarrow y_\lambda$. We also have that $T_\lambda$ is bounded for each $\lambda$. This implies $T_\lambda v_n \rightarrow T_\lambda v$. Now note that $(Tv_n)_\lambda = T_\lambda v_n$. Therefore we have that both $T_\lambda v_n \rightarrow T_\lambda v$, and $T_\lambda v_n \rightarrow y_\lambda$. This implies $T_\lambda v = y_\lambda$ for all $\lambda$, and thus $Tv = y$. 
+	\end{proof}
+	
+	\section{Linear Functionals}
+	
+	We now switch gears and consider the dual space of a vector space -- $\ms{B}(V, F)$, where $F = \mathbb{R}$ or $F = \mathbb{C}$. As mentioned before, elements in this dual are also called linear functionals. The main goal of this section is to show that there are in fact nontrivial continuous linear functionals on a given vector space $V$. This result may seem self evident at first, but it does take some effort to prove.
+	
+	\begin{definition}
+	Let $V$ be a vector space over $\mathbb{R}$. By a \textbf{Minkowksi functional} on $V$, we mean a function $p: V \rightarrow \mathbb{R}$ such that:
+	\begin{enumerate}[label=(\alph*)]
+	
+		\item $p(v + w) \leq p(v) + p(w) ~~ \forall v, w \in V $
+		
+		\item $p(rv) = rp(v) ~~ \forall v \in V, \forall r \in \mathbb{R}, r > 0 $
+	
+	\end{enumerate}
+	\end{definition}
+	
+	\noindent This definition of a Minkowski functional may seem arbitrary, but in reality it is just a generalization of the properties of serminorms and norms. As we will see, many of the Minkowksi functionals that we will be using are in fact seminorms. 
+	
+	We now formulate and prove the key lemma needed to show that there are many continuous linear functionals on a given vector space.
+	
+	\begin{lemma}
+	Let $V$ be a vector space over $\mathbb{R}$, and let $p$ be a Minkowski functional on $V$. Let $W$ be a subspace of $V$, and suppose $\varphi$ is a linear functional on $W$ that satisfies $\varphi(w) \leq p(w)$ for all $w \in W$. Then for any $v \in V$, $v \notin W$, $\varphi$ has an extension $\tilde{\varphi}$ to $W \oplus \mathbb{R}v$, such that $\tilde{\varphi}(z) \leq p(z)$ for all $z \in W \oplus \mathbb{R}v$. 
+	\end{lemma}
+	\begin{proof}
+	We want to find $\alpha \in \mathbb{R}$ such that if we set $\tilde{\vphi}(w + sv) = \vphi(w) + s\alpha$, then $\tilde{\vphi}$ satisfies the condition. So, for $s > 0$, we want:
+	\[ \varphi(w) + s\alpha \leq p(w + sv) \leq p(w) + sp(v) \]
+	rewriting:
+	\[ s \vphi(w/s) + s\alpha \leq p(s (w/s) + sv) \leq p(s(w/s)) + sp(v) \]
+	\[ s \vphi(w/s) + s\alpha \leq sp(w/s + v) \leq sp(w/s) + sp(v) \]
+	Dividing by $s$ on both sides, we see that we just need:
+	\[ \vphi(w) + \alpha \leq p(w + v) \]
+	for all $w \in W$. And if $s < 0$, we do a similar calculation, but now we divide by $|s|$, instead of $s$ itself, to make sure the inequality doesn't flip. We get:
+	\[ \vphi(w) - \alpha \leq p(w - v) \]
+	Putting these two inequalities together, we want an $\alpha$ such that:
+	\[ \vphi(w) - p(w - v) \leq \alpha \leq p(w + v) - \vphi(w) \]
+	for all $w \in W$. Let us proceed to find this $\alpha$. Let $w, w_1 \in W$. Then:
+	\begin{align*}
+	\vphi(w) + \vphi(w_1) = \vphi(w + w_1) &\leq p(w + w_1) \\
+	&\leq p((w + v) + (w_1 - v)) \\
+	&\leq p(w + v) + p(w_1 - v) 
+	\end{align*}
+	We thus have:
+	\[ \vphi(w_1) - p(w_1 - v) \leq p(w + v) - \vphi(w) \]
+	for all $w, w_1 \in W$. We thus have for all $w \in W$:
+	\[ \sup_{w_1 \in W} \big\{ \vphi(w_1) - p(w_1 - v) \big\} \leq p(w+v) - \vphi(w) \]
+	and since this is true for all $w \in W$, we have:
+	\[ \sup_{w_1 \in W} \big\{ \vphi(w_1) - p(w_1 - v) \big\} \leq \inf_{w \in W} \big\{ p(w+v) - \vphi(w) \big\} \]
+	So we can choose any $\alpha$ between the $\sup$ and the $\inf$. This $\alpha$ satisfies:
+	\[ \vphi(w) - p(w - v) \leq \alpha \leq p(w + v) - \vphi(w) \]
+	for all $w \in W$, as needed. 
+	\end{proof}
+	
+	\noindent The next theorem is essential in proving the existence of continuous linear functionals.
+	
+	\begin{theorem}
+	\emph{(\textbf{Hahn-Banach Theorem (Real Case)})}
+	Let $V$ be a vector space over $\mathbb{R}$, and let $p$ be a Minkowski functional on $V$. Let $W$ be a subspace of $V$. Let $\vphi$ be a linear functional on $W$ such that $\vphi(w) \leq p(w)$ for all $w \in W$. Then there is an extension $\tilde{\vphi}$ of $\vphi$ to all of $V$ such that $\tilde{\vphi}$ is linear, and $\tilde{\vphi}(v) \leq p(v)$ for all $v \in V$.
+	\end{theorem}
+	\begin{proof}
+	Let $U \sse_S V$ be taken to mean that $U$ is a linear subspace of $V$.
+	Let:
+	\[ \mc{E} = \bigg\{ (U, \vphi_U) ~\big|~ W \sse U \sse_S V, \vphi_U \text{ is a linear extension of } \vphi \text{ to } U, \vphi_U \leq p \text{ on U } \bigg\} \]
+	Put on $\mc{E}$ the partial order:
+	\[ (U_1, \vphi_{U_1}) \leq (U_2, \vphi_{U_2}) \]
+	if $U_1 \leq U_2$ and $\vphi_{U_2}$ is an extension of $\vphi_{U_1}$. Let $\mc{T} \sse \mc{E}$ be totally ordered. Let:
+	\[ X = \bigcup_{(U, \vphi_U) \in \mc{T}} U \]
+	Since the $U$'s are nested, $X$ is actually a subspace of $V$. Furthermore, we can define $\vphi_X : X \rightarrow F$ by $\vphi_X(v) = \vphi_U(v)$, where $U$ is some subspace such that $v \in U$, and $(U, \vphi_U) \in \mc{T}$. The reason that this $\vphi_X$ well-defined is because $\mc{T}$ is totally ordered, so given $(U_1, \vphi_{U_1}), (U_2, \vphi_{U_2}) \in \mc{T}$, either $\vphi_{U_1}$ extends $\vphi_{U_2}$ or vice versa. We can also see that $\vphi_X$ is linear, is an extension of $\vphi_U$ for all $(U, \vphi_U) \in \mc{T}$, and satisfies $\vphi_X \leq p$ on $X$. Therefore $(X, \vphi_X) \in \mc{E}$, and $(X, \vphi_X)$ is an upper bound on $\mc{T}$.
+	
+	We thus see that $\mc{E}$ is inductively ordered. By Zorn's Lemma, $\mc{E}$ contains a maximal element, call it $(Y, \vphi_Y)$. So there does not exist $(U, \vphi_U) \in \mc{E}$ such that $(Y, \vphi_Y) \leq (U, \vphi_U)$, $(Y, \vphi_Y) \neq (U, \vphi_U)$. We then must have $V = Y$, otherwise, we would have $v \in V, v \notin Y$. By the lemma, we would then be able to extend $\vphi_Y$ onto $Y \oplus \mathbb{R}v$, and obtain an element strictly bigger than $(Y, \vphi_Y)$. Therefore $\vphi_Y$ is an extension of $\vphi$ onto all of $V$.
+	\end{proof}
+	
+	\begin{corollary}
+	Let $V$ be a normed vector space over $\mathbb{R}$. let $W$ be a subspace, and let $\vphi$ be a bounded linear functional on $W$. So $|\vphi(w)| \leq ||\vphi|| \cdot ||w||$ for all $w \in W$. Note the function $v \mapsto ||\vphi|| \cdot ||v||$ is a Minkowski functional. By Hahn-Banach, there is an extension $\tilde{\vphi}$ of $\vphi$ to $V$. Note this $\tilde{\vphi}$ satisfies $||\tilde{\vphi}|| = ||\vphi||$. 
+	\end{corollary}
+	
+	\begin{example}
+	One may ask whether the linear extension whose existence is asserted in the Hahn-Banach Theorem is unique. The answer is no, the extension need not be unique. For example, consider $V = \ell^1$, the space of absolutely summable sequences, with the $||\cdot||_1$ norm. For fixed $n_0 \in \mathbb{N}$, let $W = \mathbb{R} \delta_{n_0}$, where $\delta_{n_0}$ is the indicator function on $n_0$. Define $\vphi$ on $W$ by $\vphi(\delta_{n_0}) = 1$. Then $||\vphi|| = 1$. We want to to extend $\vphi$ to $\ell^1$. Choose any $g \in \ell^\infty$, i.e. the space of bounded sequences, with $||g||_\infty = 1$. Then $g$ determines a linear functional $\psi_g$ by:
+	\[ \psi_g(f) = \sum f(n) g(n) \]
+	Note $||\psi_g|| = 1$. If $g(n_0) = 1$, then $\psi_g(\delta_{n_0}) = 1$. Thus if $g(n_0) = 1$, then $\psi_g$ extends $\vphi$. We therefore see that extensions of $\vphi$ are decidedly not unique.
+	\end{example}
+	
+	\begin{example}
+	Let $c_0$ be the space of sequences converging to $0$, and consider it as a subspace of $\ell^\infty$, the space of bounded sequences. Let $W = c_0 \oplus \mathbb{R}1$, where $1$ is the constant sequence. So $W$ is the space of convergent sequences. On $W$, define $\vphi$ by $\vphi(g) = \lim g(n)$. Note $||\vphi|| = 1$. So the corollary to the Hahn-Banach Theorem says that $\vphi$ has an extension $\tilde{\vphi}$ to $\ell^\infty$ with $||\tilde{\vphi}|| = ||\vphi|| = 1$. Note $\tilde{\vphi}(c_0) = 0$. It turns out that this extension $\tilde{\vphi}$ is not constructible. It is not surprising that such an example like this exists, given that our proof of Hahn-Banach relies on the Axiom of Choice. 
+	\end{example}
+	
+	\noindent We now prove the Hann-Banach Theorem for complex normed vector spaces.
+	
+	\begin{theorem}
+	\emph{(\textbf{Hahn-Banach Theorem (Complex, Normed Case)})}
+	Let $V$ be a normed vector space over $\mathbb{C}$. Let $W \sse V$ be a subspace. Let $\vphi$ be a bounded linear functional on $W$. There is an extension $\tilde{\vphi}$ of $\vphi$ to $V$ with $||\tilde{\vphi}|| = ||\vphi||$. 
+	\end{theorem}
+	\begin{proof}
+	For any $z \in \mathbb{C}$, we can write $z = x + iy$, $x, y \in \mathbb{R}$. Note:
+	\[ -\real (iz) = \imag (z) \]
+	Let $\psi(w) = \real (\vphi(w))$. Then $\psi$ is $\mathbb{R}$-linear. Also:
+	\[ |\psi(w)| = |\real(\vphi(w))| \leq |\vphi(w)| \leq ||\vphi|| \cdot ||w|| \]
+	By the Real Hahn-Banach Theorem, we obtain an extension $\tilde{\psi}$ of $\psi$ to $v$, such that $\tilde{\psi}$ is $\mathbb{R}$-linear, and $|\tilde{\psi}(v)| \leq ||\psi||\cdot||v|| \leq ||\vphi|| \cdot ||v||$. Set:
+	\[ \tilde{\vphi}(v) = \tilde{\psi}(v) -i\tilde{\psi}(iv) \]
+	Since $\tilde{\psi}$ is $\mathbb{R}$-linear, we have that $\tilde{\vphi}$ is $\mathbb{R}$-linear. Also:
+	\begin{align*}
+	\tilde{\vphi}(iv) &= \tilde{\psi}(iv) - i \tilde{\psi}(-v) \\
+	&= \tilde{\psi}(iv) + i \tilde{\psi}(v) \\
+	&= i(\tilde{\psi}(v) - i\tilde{\psi}(iv)) \\
+	&= i \tilde{\vphi}(v)
+	\end{align*}
+	This shows that $\tilde{\vphi}$ is also $\mathbb{C}$-linear. We also have that $\tilde{\vphi}$ extends $\vphi$, since $\tilde{\psi}$ extends $\psi$, and the relation $-\real(iz) = \imag(z)$ for all $z \in \mathbb{C}$. Given $v \in V$, we can find $\alpha \in \mathbb{C}$, $|\alpha| = 1$, such that $\tilde{\vphi}(\alpha v) \in \mathbb{R}$ and $\tilde{\vphi}(\alpha v) \geq 0$. This implies:
+	\[ |\tilde{\vphi}(\alpha v)| = |\tilde{\psi}(\alpha v)| \leq ||\varphi|| \cdot ||\alpha v|| = ||\varphi|| \cdot ||v|| \]
+	We also have:
+	\[ |\tilde{\vphi}(v)| = |\alpha|\cdot |\tilde{\vphi}(v)| = |\alpha \tilde{\vphi}(v)| = |\tilde{\vphi}(\alpha v)| \]
+	We thus have that $||\tilde{\vphi}|| \leq ||\vphi||$. Since $\tilde{\vphi}$ extends $\vphi$, we get that actually $||\tilde{\vphi}|| = ||\vphi||$. 
+	\end{proof}
+	
+	\begin{corollary}
+	Let $V$ be a normed vector space. Let $v \in V$. Then there exists $\vphi \in V^*$ with $||\vphi|| = 1$, $\vphi(v) = ||v||$. 
+	\end{corollary}
+	\begin{proof}
+	Let $W = \mathbb{R}v$, and let $\vphi(v) = ||v||$. Extend $\vphi$ to $V$. 
+	\end{proof}
+	
+	\begin{corollary}
+	For all $v \in V$, we have:
+	\[ ||v|| = \sup \bigg\{ |\vphi(v)| ~\big|~ \vphi \in V^*, ||\vphi|| \leq 1 \bigg\} \]
+	\end{corollary}
+	
+	\begin{corollary}
+	Given $v \in V$, $v = 0$ if and only if for all $\vphi \in V^*$, we have $\vphi(v) = 0$. 
+	\end{corollary}
+	
+	\noindent Given a normed vector space $V$, consider $V^{**} = (V^*)^*$. We have a canonical map $j : V \rightarrow V^{**}$:
+	\[ v \mapsto \bigg( \vphi \mapsto \vphi(v) \bigg) \]
+	Note:
+	\[ |(j(v))(\vphi)| = |\vphi(v)| \leq ||\vphi|| \cdot ||v|| \]
+	Also, given $v$, we know there exists $\vphi_v$ such that $||\vphi_v|| = 1$ and $\vphi_v(v) = ||v||$. Then:
+	\[ (j(v))(\vphi_v) = \vphi_v(v) = ||v|| \]
+	We therefore see that $||j(v)|| = ||v||$. Therefore the map $j$ is an isometry from $V$ into its double dual. If $V$ is complete, i.e. a Banach space, then $j(V)$ is a closed subspace of $V^{**}$. 
+	
+	\begin{example}
+	Let $V = c_0$, the space of sequences converging to 0. Then $V^* = \ell^1$, the space of absolutely summable sequence, and $V^{**} = \ell^\infty$, the space of bounded sequences. The function $j$ is the evident inclusion of $c_0$ in $\ell^\infty$. Note $c_0$ is separable, but $\ell^\infty$ is not separable. Therefore $j$ is not surjective. 
+	\end{example}
+	
+	\noindent The example shows that $j$ need not be surjective. When it is, we have a special name for $V$.
+	
+	\begin{definition}
+	Let $V$ be a Banach space. We say that $V$ is \textbf{reflexive} if $j : V \rightarrow V^{**}$ is surjective, and thus an isomorphism. 
+	\end{definition}
+	
+	\noindent Let $V, W$ be normed vector spaces. Let $T \in \ms{B}(V, W)$. Define $T^* : W^* \rightarrow V^*$ by:
+	\[ (T^*(\psi))(v) = \psi(Tv) \]
+	We have:
+	\[ |(T^*(\psi))(v)| = |\psi(Tv)| \leq ||\psi|| \cdot ||Tv|| \leq ||\psi|| \cdot ||T|| \cdot ||v|| \]
+	thus:
+	\[ ||T^*(\psi)|| \leq ||\psi|| \cdot ||T|| \]
+	and thus:
+	\[ ||T^*|| \leq ||T|| \]
+	Now note for any $\varep > 0$, there exists $v \in V$, $||v|| \leq 1$, $||Tv|| \geq ||T|| - \varep$. We can then find $\psi \in W^*$ such that $||\psi|| = 1$ and $\psi(Tv) = ||Tv||$. Then:
+	\[ |(T^*(\psi))(v)| = |\psi(Tv)| = ||Tv|| \geq ||T|| - \varep \]
+	Therefore $||T^*(\psi)|| \geq ||T|| - \varep$, and since $||\psi|| = 1$, we get $||T^*|| \geq ||T|| - \varep$. Since $\varep$ was arbitrary, we get $||T^*|| \geq ||T||$, and so we can conclude $||T^*|| = ||T||$. 
+	
+	Note if we have $T: V \rightarrow W$ and $S : W \rightarrow Z$, then we can obtain $S^* : Z^* \rightarrow W^*$ and $T^* : W^* \rightarrow V^*$. We can obtain $(TS)^* = S^*T^*$. Side note -- the $*$ operator is a functor from the category of Banach spaces into itself (whatever that means).
+	
+	\section{Weak and Weak-$\ast$ Topologies}
+	
+	We first review some topological concepts. Let $X$ be a set, $\{Y_\lambda\}_{\lambda \in \Lambda}$ be a collection of topological spaces, $\{f_\lambda\}_{\lambda \in \Lambda}$ a collection of functions such that $f_\lambda : X \rightarrow Y_\lambda$ for all $\lambda \in \Lambda$. We can put on $X$ the corresponding \textbf{initial topology} -- i.e. the weakest topology on $X$ making all the $f_\lambda$'s continuous. The topology has the subbase:
+	\[ \ms{S} = \bigg\{ f_\lambda^{-1}(O) ~\big|~ \lambda \in \Lambda, O \in \ms{T}_\lambda \bigg\} \]
+	A base for this topology consists of finite intersections of elements of $\ms{S}$. 
+	
+	Now let $V$ be a vector space, and $\mc{S} = \{p_\lambda\}_{\lambda \in \Lambda}$ a collection of seminorms on $V$. Note each $p_\lambda$ maps into $F$, a field. We can put on $V$ the initial topology for $\mc{S}$.
+	
+	\begin{example}
+	Let $\mc{S}$ be the collection of linear functionals on $V$, For each $\vphi \in \mc{S}$, define $p_\vphi$ by:
+	\[ p_\vphi(v) = |\vphi(v)| \]
+	The initial topology here is the same as the initial topology for $\mc{S}$. 
+	\end{example}
+	
+	\begin{example}
+	Let $V = C^\infty([0, 1])$, the set of infinitely differentiable functions on the unit interval. We can set $||f||_n = ||f^{(n)}||_\infty$, and obtain the initial topology on $V$ given by $\{||\cdot||_n\}$. 
+	\end{example}
+	
+	\begin{remark}
+	If $p$ is a seminorm on a vector space $V$, then the set:
+	\[ p^{-1}(\bar{B}(0, r)) = \{ v \in V ~|~ p(v) \leq r \} \]
+	is convex, because $p$ satisfies the triangle inequality.
+	\end{remark}
+	
+	\begin{definition}
+	A \textbf{locally convex topological vector space (LCTVS)} is a vector space equipped with a family of seminorms. Put on $V$ the weakest topology making all the seminorms continuous. The seminorms give a subbase for the neighborhood system at 0. Shifting gives a neighborhood system at any other point of $V$.
+	\end{definition}
+	
+	\begin{remark}
+	If the seminorms come from linear functionals on $V$, i.e. $p(v) = |\vphi(v)|$ for some $\vphi$, for every $p$, then we often use ``weak" in the name of the topology. 
+	\end{remark}
+
+	\begin{definition}
+	Let $V$ be a normed vector space. Consider $V^*$ and $V^{**}$. The initial topology on $V^*$ coming from $V^{**}$ is called the \textbf{weak topology}. Note also we have the canonical map $j : V \rightarrow V^{**}$. The initial topology on $V^*$ given by $j(V)$ is called the \textbf{weak-$\ast$ topology}. 
+	\end{definition}
+	
+	\noindent We thus see that there are many different topologies that we can put on $V^*$. We can use the topology coming from the norm on $V^*$, or the weak topology, or the weak-$\ast$ topology. In general, these topologies may all be different. Note if $V$ is reflexive, i.e. $j$ is surjective, then the weak and weak-$\ast$ topologies coincide.
+	
+	The following theorem explains why it is important to consider different topologies on $V^*$. 
+	
+	\begin{theorem}
+	\emph{(\textbf{Alaoglu's Theorem})}
+	The unit ball of $V^*$ is compact for the weak-$\ast$ topology.
+	\end{theorem}
+	\begin{proof}
+	The proof is an exercise in using Tychonoff's theorem. Let $B$ be the unit ball in $V^*$. For each $v \in V$, let $D_v \sse \mathbb{R}$ (or $\mathbb{C}$) be the closed ball of radius $||v||$. So $D_v$ is compact. Form $P = \prod_{v \in V} D_v$. Give $D$ the product topology. By Tychonoff's theorem, $P$ is compact. Define $i : B \rightarrow P$ by:
+	\[ (i(\vphi))_v = \vphi(v) \]
+	We have:
+	\[ |(i(\vphi))_v| = |\vphi(v)| \leq ||\vphi|| \cdot ||v|| \leq ||v|| \]
+	since $\vphi \in B$, so that $||\vphi|| \leq 1$. Thus $(i(\vphi))_v \in D_v$ for all $v$, and thus $i$ does in fact map into $P$. We want to show that $i$ is actually a homeomorphism from $B$ to $i(B)$.
+	
+	Note if $\vphi \neq \vphi'$, then there exists $v$ such that $\vphi(v) \neq \vphi'(v)$, so that $(i(\vphi))_v \neq (i(\vphi'))_v$. Thus $i$ is injective. The product topology is the smallest topology making all the projections $\pi_v : P \rightarrow D_v$, $\pi_v(f) = f_v$ continuous. The subbase for the product topology is given by:
+	\[ \bigg\{\pi_v^{-1}(B(x, r)) ~\big|~ v \in V, x \in \mathbb{R}, r > 0 \bigg\}\]
+	Now let $\pi_v^{-1}(B(x, r))$ be an element in the subbase. Consider:
+	\begin{align*}
+	i^{-1}(\pi_v^{-1}(B(x, r)) &= \bigg\{ \vphi \in B ~\big|~ i(\vphi) \in \pi_v^{-1}(B(x, r)) \bigg\} \\
+	&= \bigg\{ \vphi \in B ~\big|~ (i(\vphi))_v \in B(x, r) \bigg\} \\
+	&= \bigg\{ \vphi \in B ~\big|~ \vphi(v) \in B(x, r) \bigg\}
+	\intertext{Now let $p_v \in j(V)$ be defined by $p_v(\vphi) = \vphi(v)$. We then have:}
+	&= \bigg\{ \vphi \in B ~\big|~ p_v(\vphi) \in B(x, r) \bigg\} \\
+	&= p_v^{-1}(B(x, r)) \cap B
+	\end{align*}
+	Note that $p_v^{-1}(B(x, r)) \cap B$ is a subbasic open set in the relative weak-$\ast$ topology on $B$. Thus $B$ is continuous. Now consider any subbasic open set $p_v^{-1}(B(x, r)) \cap B$ in the relative weak-$\ast$ topology on $B$. We have:
+	\begin{align*}
+	i(p_v^{-1}(B(x, r)) \cap B) &= i\bigg(i^{-1}\big(\pi_v^{-1}(B(x, r))\big)\bigg) \\
+	&= (\pi_v^{-1}(B(x, r))) \cap i(B)
+	\end{align*}
+	Note $(\pi_v^{_1}(B(x, r))) \cap i(B)$ is a subbasic open set in the relative product topology on $i(B)$. We therefore see that $i$ is a homeomorphism. 
+	
+	To show that $B$ is compact, it suffices to show that $i(B)$ is closed, because $i(B) \sse P$, and $P$ is compact, and closed subsets of compact sets are compact. To show that $i(B)$ is closed, we can show that the every limit of every net in $i(B)$ belongs to $i(B)$. So suppose we have a net $\{i(\vphi_{\lambda})\}$ in $i(B)$, and suppose that this net converges to $f \in P$. We need to show that $f \in i(B)$. Define $\varphi : V \rightarrow \mathbb{R}$ by $\varphi(v) = f_v$. Let $v_1, v_2 \in V$. We have:
+	\begin{align*}
+	\varphi(v_1 + v_2) = f_{v_1 + v_2} &= \lim_\lambda (i(\vphi_\lambda))_{v_1 + v_2} \\
+	&= \lim_\lambda \vphi_\lambda(v_1 + v_2) \\
+	&= \lim_\lambda \vphi_\lambda(v_1) + \lim_\lambda \vphi_\lambda(v_2) \\
+	&= \lim_\lambda (i(\vphi_\lambda))_{v_1} + \lim_\lambda (i(\vphi_\lambda))_{v_2} \\
+	&= f_{v_1} + f_{v_2} \\
+	&= \varphi(v_1) + \varphi(v_2)
+	\end{align*}
+	We can do the same for scalar multiplication, and thus we see that $\varphi$ is linear, i.e. $\varphi \in V^*$. Now since $f \in P$, we have $\varphi(v) = f_v \in D_v$, i.e. $|\varphi(v)| \leq ||v||$ for all $v$. Therefore $||\varphi|| \leq 1$. Thus $\varphi \in B$. Note by how $\varphi$ is defined, we have $i(\varphi) = f$. Thus $f \in i(B)$, as needed.
+	\end{proof}
+	
+	\begin{corollary}
+	Any Banach space can be realized as a closed subspace of some $C(K)$, the space of continuous functions on $K$, where $K$ is compact.
+	\end{corollary}
+	\begin{proof}
+	Let $V$ be a Banach space, and let $B$ be the unit ball in $V^*$, which by Alaoglu's Theorem, is weak-$\ast$ compact. It is also Hausdorff. Consider $C(B)$. Define a map $V \rightarrow C(B)$ by sending $v \mapsto f_v$, where $f_v(\vphi) = \vphi(v)$. Note:
+	\[ ||f_v||_\infty = \sup \big\{ |\vphi(v)| ~|~ \vphi \in B \big\} \leq ||v|| \]
+	since $||\vphi|| \leq 1$. But by Hahn-Banach, we can find $\vphi$ such that $||\vphi|| = 1$ and $\vphi(v) = ||v||$. So we see that $||f_v||_\infty = ||v||$. Thus $v \mapsto f_v$ is an isometry. Now since $V$ is a Banach space, its image is complete, and therefore its image is closed in $C(B)$. 
+	\end{proof}
+	
+	\section{Convex Sets}
+	
+	In this section we explore properties of convex sets and how they relate to linear functionals. We start off with an important lemma.
+	
+	\begin{lemma}
+	Let $V$ be a locally convex topological vector space, and let $U$ be a convex neighborhood of $0_V$ in $V$. For any $v \in V$, set:
+	\[ m_U(v) = \inf \big\{ s ~|~ s > 0, s^{-1}v \in U \big\} \]
+	Then $m_U(v)$ is a Minkowski functional, with the following property:
+	\[ U \supseteq \{v ~|~ m_U(v) < 1 \} \]
+	\end{lemma}
+	\begin{proof}
+	Let $v \in V$. Consider the map $\alpha \mapsto \alpha v$ for $\alpha \in \mathbb{R}$. Call this map $s_v$. Because $V$ is a topological vector space, this map is continuous. Note $0 \in s_v^{-1}(U)$, since $0 \cdot v = 0_V \in U$. By continuity, we have that $s_v^{-1}(U)$ is a neighborhood of 0. There thus exists an open ball $B(0, r) \sse s_v^{-1}(U)$. Thus for all $n \in \mathbb{N}$ such that $\frac{1}{n} < r$, we have $\frac{1}{n}v \in U$. Therefore $m_U(v) < \infty$. Also note $m_U(0_V) = 0$.
+	
+	Let $t > 0$. We have:
+	\begin{align*}
+	m_U(tv) &= \inf \big\{ s ~|~ s > 0, s^{-1}(tv) \in U \big\} \\
+	&= \inf \big\{ ts' ~|~ s' > 0, s'^{-1}v \in U \big\} \\
+	&= t \inf \big\{ s' ~|~ s' > 0, s'^{-1}v \in U \big\} \\
+	&= tm_U(v) 
+	\end{align*}
+	Now let $v, w \in V$, $s, t > 0$ such that $s^{-1}v, t^{-1}w \in U$. We have that $\frac{s}{s+t}, \frac{t}{s+1} \in [0, 1]$, and that they sum to 1. Thus since $U$ is convex, we have:
+	\[ \frac{s}{s+t}(s^{-1}v) + \frac{t}{s+t}(t^{-1}v) \in U \]
+	which can be rewritten:
+	\[ (s + t)^{-1}(v + w) \in U \]
+	We therefore see that:
+	\[ m_U(v + w) \leq s + t \]
+	Since this holds for all $s, t$ such that $s^{-1}v, t^{-1}w \in U$, we have:
+	\[ m_U(v + w) \leq m_U(v) + m_U(w) \]
+	We thus see that $m_U$ is indeed a Minkowski functional. 
+	
+	Now let $v$ be such that $m_U(v) < 1$. There exists $m_U(v) \leq r  < 1$ such that $r^{-1}v \in U$. Now since $0_V \in U$, and $U$ is convex, for all $t > r$, we have that $t^{-1}v = t^{-1}v + (r^{-1} - t^{-1})\cdot 0_V \in U$. Thus since $1 > r$, we get that $v \in U$. Therefore:
+	\[ U \supseteq \{v ~|~ m_U(v) < 1 \} \]
+	as needed.
+	\end{proof}
+	
+	\noindent In order to prove the theorem we want to prove, we also need a small lemma concerning continuous linear functionals.
+	
+	\begin{lemma}
+	Let $\vphi : V \rightarrow \mathbb{R}$ be a linear functional, and let $V$ be a topological vector space. If $\vphi$ is bounded on a neighborhood of $0_V$, then $\vphi$ is continuous.
+	\end{lemma}
+	\begin{proof}
+	Let $U$ be a neighborhood of $0_V$ such that $\vphi$ is bounded on $U$. Then there exists $M$ such that for all $v \in U$, we have $\vphi(v) < M$. If we then consider the neighborhood $W = (\varep/M)V$, we have that $\vphi(v) < \varep$ for all $v \in W$. Thus $\vphi$ is continuous.
+	\end{proof}
+	
+	\noindent With these two lemmas in hand, we can now prove the following theorem:
+	
+	\begin{theorem}
+	\emph{(\textbf{Hahn-Banach Separation Theorem})}
+	Let $V$ be a locally convex topological vector space (i.e. its topology is given by a family of seminorms). Let $O$ be an open convex set in $V$, and let $C$ be a convex set in $V$ such that $O \cap C = \varnothing$. Then there exists $\vphi \in V^*$ and  $t_0 \in \mathbb{R}$ such that $\vphi(O) < t_0 \leq \vphi(C)$. 
+	\end{theorem}
+	\begin{proof}
+	Let:
+	\[ O - C = \bigcup_{c \in C} O - c \]
+	Note that each of the translates $O - c$ is open, and thus $O - C$ itself is open. Given $o_1 - c_1, o_2 - c_2 \in O - C$, $s, t \in [0, 1]$, $s + t = 1$, we have:
+	\[ s(o_1 - c_1) + t(o_2 - c_2) = so_1 + to_2 -(sc_1 + tc_2) \]
+	Note $O, C$ are convex, so that $so_1 + to_2 \in O$, $sc_1 + tc_2 \in C$. Therefore we see that $O - C$ is also convex. Note that since $O \cap C = \varnothing$, we have that $O_V \notin O - C$. Pick any $v_0 \in O - C$, and consider the set:
+	\[ U = O - C - v_0 \]
+	Note $U$ is both open and convex, and $0_v \in U$. Thus $U$ is a convex neighborhood of $0_V$. Consider the minkowski functional $m_U$ as defined in the lemma. Since $O \cap C = \varnothing$, we have that $-v_0 \notin U$. Define $\vphi_0$ on $\mathbb{R}(-v_0)$ by $\vphi_0(-v_0) = 1$. Then for $s > 0$, we have $\vphi_0(s(-v_0)) = s$, and:
+	\[ m_U(s(-v_0)) = sm_U(-v_0) \geq s \]
+	Since as proved in the lemma, if $m_U(v) < 1$, then $v \in U$, so that if $v \notin U$, we have $m_U(v) \geq 1$. Now if $s < 0$, we have $\vphi_0(s(-v_0)) \leq 0$, while $m_U(s(-v_0)) \geq 0$. We therefore have that $\vphi_0 \leq m_U$ on $\mathbb{R}(-v_0)$. By the Hahn-Banach Theorem, $\vphi_0$ extends to $\vphi$ on $V$, with $\vphi \leq m_U$ on $V$. 
+	
+	Now note that $U \cap (-U)$ is an open neighborhood of $0_V$. If $v \in U \cap (-U)$, then:
+	\[ \vphi(v) \leq m_U(v) \leq 1 \]
+	(if $v \in U$, then from the definition of $m_U$, we have $m_U(v) \leq 1$). Also:
+	\[ \vphi(-v) \leq m_U(-v) \leq 1 \]
+	thus:
+	\[ |\vphi(v)| \leq 1 \]
+	for all $v \in U \cap (-U)$. We thus see that $\vphi$ is bounded on a neighborhood of $0_V$, and thus by our lemma, we have that $\vphi$ is continuous, i.e. $\vphi \in V^*$. 
+	
+	The last step is to show that this $\vphi$ we have obtained separates our convex sets $O$ and $C$. Given $w \in O, c \in C$, we have $w - c - v_0 \in U$. We have:
+	\[ \vphi(w - c - v_0) \leq m_U(w - c - v_0) \leq 1 \]
+	and thus:
+	\[ \vphi(w) - \vphi(c) - \vphi(v_0) \leq 1 \]
+	But note $\vphi(-v_0) = 1$, and thus:
+	\[ \vphi(w) \leq \vphi(c) \]
+	Note this holds for all $w \in O$, and thus:
+	\[ \sup \big\{ \vphi(w) ~|~ w \in O \big\} \leq \vphi(c) \]
+	and since this holds for all $c \in C$, we have:
+	\[ \sup \big\{ \vphi(w) ~|~ w \in O \big\} \leq \inf \big\{ \vphi(c) ~|~ c \in C \big\} \]
+	Now choose some $t_0$ between these two. We then have:
+	\[ \vphi(w) \leq t_0 \leq \vphi(c) \]
+	for all $w \in O, c \in C$. Finally, note that $O$ is open, so we actually must have:
+	\[ \vphi(w) < t_0 \leq \vphi(c) \]
+	for all $w \in O, c \in C$.	
+	\end{proof}
+	
+	\begin{corollary}
+	For a locally convex (Hausdorff) topological vector space $V$, $V^*$ separates points.
+	\end{corollary}
+	\begin{proof}
+	It suffices to show that $V^*$ separates points from $0$. Let $v \in V$, $v \neq 0$. Set $C = \{0\}$, and let $O$ be some open convex set such that $0_V \in O$, $v \notin O$ (we can do this since $V$ is Hausdorff). Then apply the Hahn-Banach Separation Theorem to obtain our $\vphi$.
+	\end{proof}
+		
+	\noindent Let us now transition to another topic regarding convex sets. Our goal is to prove a certain theorem called the Krein-Milman Theorem. But first, we need to set the stage for it.
+		
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	\newpage
+	\chapter{$L^p$ Spaces}
+	We now return to integration and consider a more general class of ``integrable" functions, the $L^p$ spaces, for $0 < p < \infty$. We will also use the theory of Functional Analysis to obtain some important results. 
+	% Having laid out the general theory of $L^1$, we now move onto a more general class of ``integrable" functions, the $L^p$ spaces, for $0 < p < \infty$. 
+	
+	\section{$L^p$ as a Banach Space}
+	
+	\begin{definition}
+	We define:
+	\[ \ms{L}^p(X, S, \mu, B) = \bigg\{ f \in \ms{M}(X, S, \mu, B) ~\bigg|~ \big(x \mapsto ||f(x)||^p \big) \in \ms{L}^1(X, S, \mu, R) \bigg\} \]
+	\end{definition}
+	
+	\begin{prop}
+	$\ms{L}^p$ is a vector space for the pointwise operations. 
+	\end{prop}
+	\begin{proof}
+	Let $f, g \in \ms{L}^p$. Then:
+	\begin{align*} 
+	||f(x) + g(x)||^p &\leq (||f(x)|| + ||g(x)||)^p \\
+	&\leq \big( 2 (||f(x)|| \vee ||g(x)||)\big)^p \\
+	&\leq 2^p (||f(x)|| \vee ||g(x)||)^p \\
+	&\leq 2^p (||f(x)||^p + ||g(x)||^p)
+	\end{align*}
+	Note $x \mapsto ||f(x)||^p, x \mapsto ||g(x)||^p \in \ms{L}^1$, and so $x \mapsto ||f(x) + g(x)||^p$ is in $\ms{L}^1$, by the corollary to the Lebesgue Dominated Convergence (LDC) theorem. Scalar multiplication is easier:
+	\[ ||rf(x)||^p = |r|^p||f(x)||^p \]
+	and $x \mapsto |r|^p ||f(x)||^p \in \ms{L}^1$. 
+	\end{proof}
+	
+	\begin{definition}
+	For $f \in \ms{L}^p$, we set its $p$-norm to be:
+	\[ ||f||_p = \left( \int ||f(x)||^p ~ d\mu(x) \right)^{\frac{1}{p}} \]
+	\end{definition}
+	
+	\begin{remark}
+	Note then that $||rf||_p = |r|\cdot ||f||_p$. 
+	\end{remark}
+	
+	\noindent However, for $0 < p < 1$, $||\cdot||_p$ is not a norm (the triangle inequality fails). In fact, the closed convex hull of:
+	\[ \{ f ~|~ ||f||_p \leq 1 \} \]
+	is all of $\ms{L}^p$ (if $||\cdot||_p$ is a norm, then it should be the unit ball). Looking ahead, this means that there are no linear functionals on $\ms{L}^p$, $0 < p < 1$, that are continuous. 
+	
+	We can also note that $||f||_p = 0$ implies $f = 0$ a.e. Thus we can obtain $L^p$, the a.e. equivalence classes of $\ms{L}^p$. To prove that $||\cdot||_p$ is a norm on $L^p$ for $1 \leq p < \infty$, we need a Cauchy-Scharz type inequality.
+	
+	\begin{lemma}
+	Let $1 < p < \infty$. Let $q$ be defined by:
+	\[ \frac{1}{p} + \frac{1}{q} = 1 \]
+	Note $q$ is uniquely determined. Then for $r, s \in \mathbb{R}^+$:
+	\[ rs \leq \frac{r^p}{p} + \frac{s^q}{q} \]
+	\end{lemma} 
+	\begin{proof}
+	Let $a = r^p$, $b = s^q$. We need:
+	\[ a^{1/p}b^{1/q} \leq \frac{a}{p} + \frac{b}{q} \]
+	Dividing by $b$:
+	\begin{align*}
+	a^{1/p}b^{-1/p} &\leq \frac{a/b}{p} + 1/q \\
+	\left(\frac{a}{b}\right)^{1/p} &\leq \frac{a/b}{p} + \frac{1}{q}
+	\end{align*}
+	So we need for $t = \frac{a}{b} \in \mathbb{R}$, $0 < t < \infty$:
+	\[ t^{1/p} \leq \frac{t}{p} + \frac{1}{q} = \frac{t}{p} + 1 - \frac{1}{p} \]
+	Let $f(t) = \frac{t}{p} + 1 - \frac{1}{p} - t^{1/p}$. We want $f \geq 0$. This is a calculus problem. Note $f(1) = 0$, and:
+	\[ f'(t) = \frac{1}{p} - \frac{1}{p} t^{(1/p) - 1} \]
+	Note:
+	\[ \frac{1}{p} - 1 = \frac{1}{q} < 0 \]
+	For $t > 1$, $t^{(1/p) - 1} < 1$, so $f'(t) > 0$. For $0 < t < 1$, we can see that $f'(t) < 0$. Thus we get that $f \geq 0$. 
+	\end{proof}
+
+	\begin{lemma}
+	\emph{(\textbf{Holder's Inequality})}
+	For $1 < p < \infty$, $\frac{1}{p} + \frac{1}{q} = 1$, $f \in \ms{L}^P(X, S, \mu, B)$, $g \in \ms{L}^q(X, S, \mu, B)$, we have:
+	\[ \bigg( x \mapsto ||f(x)|| \cdot ||g(x)|| \bigg) \in \ms{L}^1 (X, S, \mu, \mathbb{R}) \]
+	and:
+	\[ \int ||f|| \cdot ||g|| ~ d\mu \leq ||f||_p||g||_q \]
+	\end{lemma}
+	\begin{proof}
+	We have:
+	\[ ||f(x)|| \cdot ||g(x)|| \leq \frac{||f(x)||^p}{p} + \frac{||g(x)||^q}{q} \]
+	for all $x \in X$. Note by definition, $x \mapsto \frac{||f(x)||^p}{p}, x \mapsto \frac{||g(x)||^q}{q} \in \ms{L}^1$. We thus see that $x \mapsto ||f(x)||\cdot||g(x)||$ is dominated by a function in $\ms{L}^1$, and thus by the corollary to LDC, we get that $x \mapsto ||f(x)|| \cdot ||g(x)|| \in \ms{L}^1$. Even more:
+	\[ \int ||f(x)|| \cdot ||g(x)|| ~ d\mu(x) \leq \frac{1}{p} \int ||f(x)||^p ~ d\mu(x) + \frac{1}{q} \int ||g(x)||^q ~ d\mu(x) \]
+	Applying this inequality to the functions $\frac{||f(x)||}{||f||_p}$, $\frac{||g(x)||}{||g||_q}$, we get:
+	\begin{align*}\frac{1}{||f||_p ||g||_q} \int ||f(x)|| \cdot ||g(x) ~ d\mu(x) &\leq \frac{1}{p} \int \frac{||f(x)||^p}{||f||_p^p} ~ d\mu(x) + \frac{1}{q} \int \frac{||g(x)||^q}{||g||_q^q} ~ d\mu(x)
+	\intertext{By the definition of $||f||_p, ||g||_q$, we obtain:}
+	&\leq \frac{1}{p} + \frac{1}{q} = 1 
+	\intertext{and therefore:}
+	\int ||f(x)|| \cdot ||g(x)|| ~ d\mu(x) &\leq ||f||_p ||g||_q
+	\end{align*}	
+	\end{proof}
+	
+	\begin{lemma}
+	\emph{(\textbf{Minkowski's Inequality})}
+	For $p > 1$, $f, g \in \ms{L}^p$, we have:
+	\[ ||f + g||_p \leq ||f||_p + ||g||_p \]
+	\end{lemma}
+	\begin{proof}
+	Let $q$ be defined by $\frac{1}{p} + \frac{1}{q} = 1$. Then for $x \in X$:
+	\begin{align*}
+	||f(x) + g(x)||^p &= ||f(x) + g(x)|| \cdot ||f(x) + g(x)||^{p-1} \\
+	&= ||f(x) + g(x)|| \cdot ||f(x) + g(x)||^{p/q} \\
+	&\leq ||f(x)|| \cdot ||f(x) + g(x)||^{p/q} + ||g(x)|| \cdot ||f(x) + g(x)||^{p/q}
+	\end{align*}
+	Note that the terms on the right are integrable. We have:
+	\[ \int ||f + g||^p ~ d\mu \leq \int ||f|| \cdot ||f + g||^{p/q} ~ d\mu + \int ||g|| \cdot ||f + g||^{p/q} ~ d\mu(x) \]
+	Note $f + g \in \ms{L}^p$, and thus $(f + g)^{p/q} \in \ms{L}^q$. Thus by Holder's inequality, the first term on the right satisfies:
+	\begin{align*}
+	\int ||f|| \cdot ||f + g||^{p/q} ~ d\mu &\leq ||f||_p \cdot ||f + g||_q^{p/q} \\
+	&\leq ||f||_p \left( \int (f + g)^p ~ d\mu \right)^{\frac{1}{q}} \\
+	&\leq ||f||_p \left( \int (f + g)^p ~ d\ u \right)^{\frac{1}{p} \frac{p}{q}} \\
+	&\leq |f||_p \cdot || f + g||_p^{p/q}
+	\end{align*}
+	Similarly, the second term on the right is $\leq ||g||_p \cdot ||f + g||_p^{p/q}$. We can therefore obtain:
+	\begin{align*}
+	||f + g||_p^p &\leq ||f||_p \cdot ||f + g||_p^{p/q} + ||g||_p \cdot ||f + g||_p^{p/q}
+	\intertext{Assuming $||f + g||_p \neq 0$, we get:}
+	||f + g||^{p - \frac{p}{q}} &\leq ||f||_p + ||g||_p \\
+	||f + g||_p &\leq ||f||_p + ||g||_p
+	\end{align*}
+	\end{proof}
+	
+	\begin{theorem}
+	For $1 \leq p < \infty$, $||\cdot||_p$ is a norm on $L^p$. 
+	\end{theorem}
+	\begin{proof}
+	We have already proven this for $p = 1$. For $1 < p < \infty$, we have shown that $||\cdot||_p$ satisfies the triangle inequality. The other two conditions are simple enough to see. 
+	\end{proof}
+	
+	\noindent So we have now turned $L^p$ ($1 \leq p < \infty$) into a vector space. One natural question to ask is whether it is in fact a Banach space; i.e., is it complete?
+	
+	\begin{lemma}
+	Convergence in ``$p$-mean" implies convergence in measure. 
+	\end{lemma}
+	\begin{proof}
+	Let $\varep > 0$, $f \in \ms{L}^p$, $E_\varep = \{x ~|~ ||f(x)|| \geq \varep \}$. We have:
+	\[ \chi_{E_\varep}(x) \leq \frac{||f(x)||}{\varep} \leq \frac{||f(x)||^p}{\varep^p} \in \ms{L}^1 \]
+	And so by a previous lemma, we have that $\mu(E_\varep) < \infty$, and actually:
+	\[ \mu(E_\varep) \leq \int \frac{||f(x)||^p}{\varep^p} ~ d\mu \leq \frac{1}{\varep^p} ||f||_p^p \]
+	Applying this to $f - f_n$, let $E_\varep = \{x ~|~ ||f(x) - f_n(x)|| \geq \varep \}$. We have:
+	\[ \mu(E_\varep) \leq \frac{1}{\varep^p}||f - f_n||_p^p \]
+	We thus see that if $\{f_n\}$ is a sequence in $\ms{L}^p$, and if $||f - f_n||_p \rightarrow 0$ ($f \in \ms{L}^p$), then $\mu(E_\varep) \rightarrow 0$, so that $f_n \rightarrow f$ in measure. 
+	\end{proof}
+	
+	\begin{remark}
+	In the same way, we see that when we apply this proof to functions of the form $f_m - f_n$, we get that a sequence that is $p$-mean Cauchy is Cauchy in measure. 
+	\end{remark}
+	
+	\begin{theorem}
+	$L^p$ is complete. 
+	\end{theorem}
+	\begin{proof}
+	Let $\{f_n\}$ be a $p$-mean Cauchy sequence in $\ms{L}^p$. It is Cauchy in measure, so there is a subsequence that converges a.u. (and so a.e.) to some function $f$ that is measurable. We know $f$ is unique a.e., and $f_n \rightarrow f$ in measure. 
+%	We have:
+%	\[ \bigg( x \mapsto ||f(x)|| \bigg) \in \ms{L}^p(X, S, \mu, \mathbb{R}) \]
+%	and so:
+%	\[ \bigg( x \mapsto ||f(x)||^p \bigg) \in \ms{L}^1(X, S, \mu, \mathbb{R}) \]
+	We want to show that if $\{f_n\}$ is $p$-mean Cauchy, and if $f_n \rightarrow f$ a.e., then $f \in \ms{L}^p$ and $f_n \rightarrow f$ in $p$-mean. I.e.:
+	\[ \int ||f - f_n||^p ~ d\mu \rightarrow 0 \]
+	We have for fixed $n$:
+	\[ ||f_m(x) - f_n(x)||^p \rightarrow ||f(x) - f_n(x)||^p ~~ (m \rightarrow \infty)\]
+	a.e. Thus we can apply Fatou's lemma:
+	\[ \int ||f - f_n||^p ~ d\mu \leq \liminf \int ||f_m - f_n||^p ~ d\mu \]
+	Given $\varep > 0$, there exists $N$ such that for $m, n \geq N$:
+	\[ ||f_m - f_n||_p < \varep \]
+	i.e.:
+	\[ \int ||f_m - f_n||^p ~ d\mu < \varep^p \]
+	In particular, for fixed $n \geq N$, and all $m \geq N$, we have for these conditions, that:
+	\[ \liminf \left\{ \int ||f_m - f_n||^p ~ d\mu \right\} < \varep^p \]
+	Thus for $n \geq N$:
+	\[ \int ||f - f_n||^p ~ d\mu < \varep^p \]
+	Since this integral is finite, we get that $f - f_n \in \ms{L}^p$, and thus $f \in \ms{L}^p$. We can also see that $||f - f_n||_p \rightarrow 0$. 
+	\end{proof}
+
+		 
+\end{document}
