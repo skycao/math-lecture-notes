@@ -1491,6 +1491,54 @@
 	\end{proof}
 		
 	\noindent Let us now transition to another topic regarding convex sets. Our goal is to prove a certain theorem called the Krein-Milman Theorem. But first, we need to set the stage for it.
+	
+	\begin{definition}
+	Let $V$ be a vector space, $C \sse V$ a convex subset. A nonempty, convex subset $F \sse C$ is a \textbf{face} of $C$ if whenever $v \in F$, $v = tw_1 + (1 - t)w_2$, $w_1, w_2 \in C$, $0 < t < 1$, then $w_1, w_2 \in F$. 
+	
+	An \textbf{extreme point} of $C$ is a point $v \in C$ such that $\{v\}$ is a face of $C$.
+	\end{definition}
+
+	\begin{prop}
+	Let $F$ be a face of $C$, and $G$ a face of $F$. Then $G$ is a face of $C$. 
+	\end{prop}
+	\begin{proof}
+	Let $v \in G$, $v = tw_1 + (1 - t)w_2$, $w_1, w_2 \in C$, $0 < t < 1$. Since $G \sse F$, we have $v \in F$. Since $F$ is a face of $C$, we have $w_1, w_2 \in F$. Since $G$ is a face of $F$, we have $w_1, w_2 \in G$. Thus we see that $G$ is a face of $C$.
+	\end{proof}
+	
+	\noindent Now that we have defined faces and extreme points, we may wonder, how do we actually obtain examples of the two? This is a good point, because it is not immediately obvious how to go about constructing faces and extreme points.
+	
+	Let $V$ be a locally convex (Hausdorff) topological vector space, and let $C \sse V$ be convex and compact. Let $\vphi \in V^*$. Then $\vphi_{|C}$ is a continuous function on a compact set, and so it takes on its supremum and infimum. Let $F$ be the subset of $C$ where $\vphi$ takes on its supremum on $C$. Then $F$ is a face of $C$, for if:
+	\[ v = tw_1 + (1 - t)w_2 \in F \]
+	where $w_1, w_2 \in C, 0 < t < 1$, then:
+	\[ \sup_{x \in C} \vphi(x) = \vphi(v) = t\vphi(w_1) + (1 - t)\vphi(w_2) \]
+	Clearly, $\vphi$ must take on its supremum at both $w_1, w_2$ in order for this equality to be satisfied. Thus $w_1, w_2 \in F$. So compactness provides lots of faces.
+	
+	Suppose $C$ has more than one point. We then have $w_1, w_2 \in C$, $w_1 \neq w_2$. Consider a convex neighborhood $N$ of $w_1$ such that $w_2 \notin N$. Then the Hahn-Banach Separation Theorem gives us a $\vphi \in V^*$ such that $\vphi(w_1) \neq \vphi(w_2)$. So at least one of $w_1, w_2$ is where $\vphi$ does not take its max. Thus $F$ as defined before is a proper face of $C$. Thus if $C$ has more than one point, then it has a proper face.
+	
+	We have shown that compact sets contain many faces. But what about extreme points? The next theorem answers that question.
+	
+	\begin{theorem}
+	\emph{(\textbf{Krein-Milman Theorem})}
+	Let $V$ be a locally convex (Hausdorff) topological vector space. Let $C$ be a compact, convex set in $V$. Let $E$ be the set of extreme points of $C$. Then:
+	\[ C = \bar{c}(E) \]
+	where $\bar{c}(E)$ is the closure of the convex hull of $E$. Note $c(E)$ is defined as:
+	\[ c(E) = \bigg\{ t_1e_1 + \cdots + t_ne_n ~\big|~ t_j \geq 0, \sum t_j = 1, e_j \in E \bigg\} \]
+	\end{theorem}
+	\begin{proof}
+	Let $F_0$ be any closed face of $C$ (it could even be $C$ itself). Let:
+	\[ \ms{F} = \big\{ \text{set of closed faces of $F_0$} \big\} \]
+	Order $\ms{F}$ by reverse inclusion, i.e. $F_1 \geq F_2$ if $F_1 \sse F_2$. We claim that $\ms{F}$ is inductively ordered. Let $\ms{C} \sse \ms{F}$ be a chain. Let:
+	\[ F_* = \bigcap \big\{F \in \ms{C} \big\} \]
+	Now note that $F_0$ is compact, and $\ms{C}$ satisfies the finite intersection property, so that the intersection of the elements of $\ms{C}$ is nonempty, i.e. $F_* \neq \varnothing$. Thus $F_*$ is an upper bound of $\ms{C}$.
+	
+	So by Zorn's Lemma, $\ms{F}$ has a maximal element, $F_\sharp$. Note $F_\sharp$ can only have one point, or else it would contain a proper face and thus not be maximal. Thus every closed face of $C$ contains an extreme point of $C$. 
+	
+	Let $D = \bar{c}(E)$. Note $D \sse C$, since $C$ is both convex and compact, and $V$ is Hausdorff, so that $C$ is closed. If $D \neq C$, let $w \in C, w \notin D$. We can find an open convex neighborhood $U$ of $w$ that does not meet $D$. By Hahn-Banach separation, we can find $\vphi \in V^*$, $\vphi(w) > \vphi(v)$ for all $v \in D$. Then the closed face where $\vphi$ takes its maximum value will contain an extreme point that does not belong to $E$, since $D \supseteq E$. This is a contradiction. Therefore $D = C$. 
+	\end{proof}
+	
+	\begin{remark}
+	As a side note, Alaoglu's Theorem and the Krein-Milman Theorem are often used in tandem to prove that certain Banach spaces cannot be the dual of any space. The general procedure is to suppose a given Banach space $V$ is the dual of some space. Then the unit ball of $V$ is weak-$\ast$ compact, and so by the Krein-Milman Theorem, the unit ball of $V$ should have many extreme points. We then show that it turns out that $V$ does not have enough extreme points, i.e. the closure of the convex hull of the set of extreme points of the unit ball cannot be equal to the unit ball. This contradiction then shows that $V$ cannot be the dual of some space.
+	\end{remark}
 		
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
