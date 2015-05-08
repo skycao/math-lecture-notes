@@ -1539,6 +1539,43 @@
 	\begin{remark}
 	As a side note, Alaoglu's Theorem and the Krein-Milman Theorem are often used in tandem to prove that certain Banach spaces cannot be the dual of any space. The general procedure is to suppose a given Banach space $V$ is the dual of some space. Then the unit ball of $V$ is weak-$\ast$ compact, and so by the Krein-Milman Theorem, the unit ball of $V$ should have many extreme points. We then show that it turns out that $V$ does not have enough extreme points, i.e. the closure of the convex hull of the set of extreme points of the unit ball cannot be equal to the unit ball. This contradiction then shows that $V$ cannot be the dual of some space.
 	\end{remark}
+	
+	\section{Hilbert Spaces}
+	
+	In this section, we talk about some of the ``nicest" examples of Banach spaces -- Hilbert spaces. They can be thought of as generalizations of Euclidean space.
+	
+	\begin{definition}
+	A Hilber space $\ms{H}$ is a vector space over $\mathbb{R}$ or $\mathbb{C}$ equipped with an inner product $\langle \cdot , \cdot \rangle$ that is linear in the first argument and conjugate linear in the second. Also, $\ms{H}$ must be complete with respect to the metric coming from the norm defined by:
+	\[ ||\xi|| = \langle \xi, \xi \rangle^{1/2} \]
+	In short, a Hilbert space is a Banach space with inner product, with the norm coming from the inner product.
+	\end{definition}
+	
+	\begin{remark}
+	For any vector space with inner product, we have:
+	\[ \langle \xi, \eta \rangle = \frac{1}{4} \sum_{n=0}^3 i^n \langle \xi + i^n \eta, \xi + i^n \eta \rangle \]
+	This is called \textbf{polarization}. The function $\xi \mapsto \langle \xi, \xi \rangle$ is called the corresponding \textbf{quadratic form}. The equation says that the inner product is characterized by its quadratic form. Note also in inner product spaces, we have the \textbf{parallelogram law}:
+	\[ ||\xi + \eta||^2 + ||\xi - \eta||^2 = 2(||\xi||^2 + ||\eta||^2) \]
+	\end{remark}
+	
+	\begin{prop}
+	Let $\ms{H}$ be a Hilbert space, and let $C$ be a closed convex subset. Let $\xi_0 \in \ms{H}$, $\xi_0 \notin C$. Then there exists a unique point of $C$ closest to $\xi_0$.
+	\end{prop}
+	\begin{proof}
+	We can shift both $C$ and $\xi_0$ by $\xi_0$, and so it suffices to prove for the case $\xi_0 = 0$, $0 \notin C$. Let:
+	\[ M = \inf \{ ||h|| ~|~ h \in C \} \]
+	We can find a sequence $\{h_n\}$ in $C$ such that $||h_n|| \rightarrow M$. Rearranging the parallelogram law, we can write:
+	\[ \frac{1}{4} ||h_m - h_n||^2 = \frac{1}{2}(||h_m||^2 + ||h_n||^2) - ||(h_m + h_n)/2||^2 \]
+	Note since $C$ is convex, we have $(h_m + h_n)/2 \in C$, and thus:
+	\[ ||(h_m + h_n)/2||^2 \geq M^2 \]
+	Also note that $||h_m||^2, ||h_n||^2 \rightarrow M^2$. These two facts combine to show that 
+	\[ ||h_m - h_n|| \rightarrow 0\]
+	as $m, n \rightarrow \infty$. Thus $\{h_n\}$ is Cauchy. Since $\ms{H}$ is complete, we have that $h_n \rightarrow h_0$ for some $h_0 \in \ms{H}$, Since $C$ is closed, we have that $h_0 \in C$. We then have:
+	\[ ||h_0|| = \lim_{n \rightarrow \infty} ||h_n|| = M \]
+	So that $h_0$ is indeed a closest point. Now if we also have $h_* \in C$, $||h_*|| = M$, then:
+	\[ \frac{1}{4} ||h_0 - h_*||^2 = \frac{1}{2}(||h_0||^2 + ||h_*||^2) - ||(h_0 + h_*)/2||^2 \leq \frac{1}{2}(M^2 + M^2) - M^2 = 0 \]
+	and thus $||h_0 - h_*|| = 0$, and thus $h_0 = h_*$. Therefore $h_0$ is unique.
+	
+	\end{proof}
 		
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
