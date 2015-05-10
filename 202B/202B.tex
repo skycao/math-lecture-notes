@@ -908,6 +908,88 @@
 	\[ \sum \chi_{E_n}(x) \chi_{F_n} \]
 	\end{proof}
 	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	\chapter{Signed Measures}
+	
+	In this short chapter, we introduce a more general notion of measure, and explore the properties that these more general measures have. 
+	
+	\begin{definition}
+	Let $(X, S)$ be a measurable space. By a \textbf{signed measure}, we mean a set function $\mu : S \rightarrow \mathbb{R}$ that is countably additive and is such that $\mu(\varnothing) = 0$.
+	\end{definition}
+	
+	\noindent Note that this definition of a signed measure is not the most general definition we can make; we can actually define $\mu$ to be able to map into $\mathbb{R} \cup \{\infty, -\infty\}$, with the added restriction that $\mu$ can only take on at most one of $\infty, -\infty$. This restriction is to prevent the indeterminate form $\infty - \infty$. However, this more general definition requires some more bookkeeping, and in the interest of brevity, we stick to the present definition of a signed measure. For the general case, refer to the chapter ``General Set Functions" in \textit{Measure Theory} by Halmos.
+	
+	\section{Decomposing Signed Measures}
+	
+	\begin{definition}
+	Let $\mu$ be a signed measure on $(X, S)$. We say that $E \sse X$ is \textbf{positive} (with respect to $\mu$) if for all $F \in S$, we have that $E \cap F$ is measurable and $\mu(E \cap F) \geq 0$. Similarly, $E \sse X$ is \textbf{negative} if for all $F \i nS$, we have $E \cap F$ is measurable and $\mu(E \cap F) \leq 0$. Note positive and negative sets do not necessarily have to be measurable, but the ones that we will encounter will in fact be measurable.
+	\end{definition}
+	
+	\noindent This next theorem shows that signed measures have a nice decomposition.	
+	
+	\begin{theorem}
+	\emph{(\textbf{Hahn Decomposition})}
+	Let $\mu$ be a signed measure. There exists disjoint sets $A, B$ such that $A \oplus B = X$, and $A$ is positive, $B$ is negative with respect to $\mu$.
+	\end{theorem}
+	\begin{proof}
+	First note that the difference of two negative sets, as well as the disjoint countable union of negative sets, is negative. This implies that the countable union of negative sets is negative (given a sequence of negative sets, disjointize by taking differences to obtain a sequence of disjoint negative sets). Let $\beta = \inf \mu(B)$ over all subsets $B$ that are both measurable and negative. We can obtain a sequence $\{B_n\}$ of measurable negative sets such that $\mu(B_n) \rightarrow \beta$. Now set $B = \bigcup B_n$. 
+	
+	We have for all $B_n$:
+	\[ \mu(B) = \mu(B_n) + \mu(B \bs B_n) \leq \mu(B_n) \]
+	Since $B \bs B_n$ is a measurable negative set. This implies $\mu(B) = \beta$, and thus $\mu(B)$ is minimal.
+	
+	Consider $A = X \bs B$. We want to show that $A$ is in fact a positive set. Suppose for contradiction that it is not. Then there exists $E_0 \sse A$, $\mu(E_0) < 0$. Note $E_0$ cannot be negative, or else $B \oplus E_0$ is a measurable negative set such that $\mu(B \oplus E_0) = \mu(B) + \mu(E_0) < \mu(B)$, contradicting the minimality of $\mu(B)$. Thus let $k_1$ be the smallest positive integer such that there exists $E_1 \sse E_0$ with $\mu(E_1) \geq \frac{1}{k_1}$. Now consider $E_0 \bs E_1$. We have:
+	\[ \mu(E_0 \bs E_1) = \mu(E_0) - \mu(E_1) \leq \mu(E_0) - \frac{1}{k_1} < 0 \]
+	Note by the same argument, $E_0 \bs E_1$ cannot be negative, and so we can obtain $k_2$, which is the smallest positive integer such that there exists $E_2 \sse E_0 \bs E_1$ with $\mu(E_2) \geq \frac{1}{k_2}$. We can repeat this infinitely many times to obtain $\{E_n\}, \{k_n\}$. Now we must have that $k_n \rightarrow \infty$, or else since $\mu(E_n) \geq \frac{1}{k_n}$, we would have that:
+	\[ \mu \left( \bigoplus E_n \right) = \sum \mu(E_n) = \infty \]
+	But $\mu$ is a signed measure, and so is defined to be finite. Now consider the set:
+	\[ F_0 = E_0 \big\bs \bigoplus E_n \]
+	Let $F \sse F_0$. Suppose $\mu(F) > 0$. Let $m$ be such that $\mu(F) \geq \frac{1}{m}$. Since $k_n \rightarrow \infty$, let $k_{n_0}$ be such that $k_{n_0} \geq m$. We have $\mu(E_m) \geq \frac{1}{k_{n_0}}$. However, note that since $F \sse F_0$, we have:
+	\[ F \sse E_0 \big\bs \bigoplus_{j=1}^{n_0 - 1} E_n \]
+	The fact that $\mu(F) \geq \frac{1}{m}$ contradicts the minimality of $k_{n_0}$ we enforced when selecting our sequence $\{k_n\}$. We therefore see that $F_0$ is negative. However, note that:
+	\[ \mu(F_0) = \mu(E_0) - \sum \mu(E_n) < \mu(E_0) < 0 \]
+	Therefore we thus obtain that the set $B \oplus F_0$ is measurable and negative, and is such that:
+	\[ \mu(B \oplus F_0) = \mu(B) + \mu(F_0) < \mu(B) \]
+	contradicting the minimality of $\mu(B)$. Therefore we see that $\mu(E_0) \geq 0$, and thus $A$ must be positive.
+	\end{proof}
+	
+	\begin{definition}
+	Let $\mu$ be a signed measure. Suppose $A, B$ are disjoint, $A \oplus B = X$, $A$ is positive, $B$ is negative with respect to $\mu$. Then $A, B$ form a \textbf{Hahn decomposition} of $X$ with respect to $\mu$.
+	\end{definition}
+	
+	\noindent The nice thing about the Hahn Decomposition Theorem is that it allows us to show that any signed measure is actually the difference of two measures. 
+	
+	\begin{theorem}
+	\emph{(\textbf{Jordan Decomposition})}
+	Let $\mu$ be a signed measure. Then $\mu = \mu_1 - \mu_2$, where $\mu_1, \mu_2$ are measures.	
+	\end{theorem}
+	\begin{proof}
+	Let $A, B$ be a Hahn decomposition of $X$. Define 
+	\[ \mu^+(E) = \mu(A \cup E)\] 
+	and 
+	\[ \mu^-(E) = -\mu(B \cup E)\] 
+	for all $E \in S$. We can verify that both $\mu^+, \mu^-$ are measures. From their definitions, we can see that $\mu = \mu^+ - \mu^-$. We say that $\mu^+, \mu^-$ form the \textbf{Jordan decomposition} of $\mu$.
+	\end{proof}
+	
+	\noindent Note in the proof of the theorem, it's not obvious that $\mu^+, \mu^-$ are in fact well-defined, because it's possible to have more than one Hahn decomposition on $X$. For the proof that the definitions of $\mu^+, \mu^-$ are in fact well defined, refer to Halmos.
+	
+	\begin{definition}
+	The $\mu^+,\mu^-$ as defined in the proof of the Jordan decomposition are called the \textbf{upper and lower variations} of $\mu$. We define the \textbf{total variation} of $\mu$, denoted $|\mu|$, as follows:
+	\[ |\mu|(E) = \mu^+(E) + \mu^-(E) \]
+	Note the total variation is also a measure, and it satisfies the property:
+	\[ |\mu(E)| \leq |\mu|(E) \]
+	\end{definition}
+	
+	\section{Comparing Measures}	
+	
+	When we have two measures on the same measure space, they may be related in some way or another. One of the most important relationships is the following:
+	
+	\begin{definition}
+	Let $\mu, \nu$ be signed measures on $(X, S)$. We say that $\nu$ is \textbf{absolutely continuous} with respect to $\mu$ if for all $E \in S$, we have that $|\mu|(E) = 0$ implies $\nu(E) = 0$. We denote this as $\nu << \mu$. 
+	\end{definition}
+	
+	\noindent We have actually seen this notion of absolute continuity before, when we considered indefinite integrals of a function $f \in L^1(\mu)$. Note we can define $\nu(E) = \int_E f d\mu$. Now since $\mu$ is actually a measure, we have $|\mu| = \mu$, and so if $\mu(E) = 0$, then $\nu(E) = \int_E f d\mu = 0$, since we are integrating on a $\mu$-null set. Indeed, much of the properties of signed measures can be seen as a generalization of properties of indefinite integrals.
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
