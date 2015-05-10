@@ -867,14 +867,45 @@
 	\end{proof}
 	
 	\begin{definition}
-	Let $B$ be a Banach space, and let $f : X \times Y \rightarrow B$. We define $f_x : Y \rightarrow B$ by $f_x(y) = f(x, y)$, and $f^y : X \rightarrow B$ by $f^y(x) = f(x, y)$. 
+	Let $B$ be a Banach space, and let $f : X \times Y \rightarrow B$. We define $f_x : Y \rightarrow B$ by $f_x(y) = f(x, y)$, and $f^y : X \rightarrow B$ by $f^y(x) = f(x, y)$.  We call $f_x$ and $f^y$ \textbf{sections} of $f$.
 	\end{definition}
+
+	\noindent Analogous to the situation with measurable sets, we have that sections of measurable functions are measurable. 	
 	
 	\begin{prop}
 	If $f$ is $S \times T$-measurable, then for any $x \in X, y \in Y$, we have that $f_x$ is $T$-measurable, $f^y$ is $S$-measurable.
 	\end{prop}
 	\begin{proof}
+	By our theorem on measurable functions, to prove that $f_x$ is $T$-measurable, it suffices to show that $\range f_x$ is separable, and $f_x^{-1}(U) \in T$ for all open $U \sse B$, $0 \notin U$. 
 	
+	Note $\range f_x \sse \range f$, so that $\range f_x$ is separable. Now for $U \sse B$ open, $0 \notin U$, we have:
+	\begin{align*} 
+	f_x^{-1}(U) &= \{ y \in Y ~|~ f_x(y) \in U \} \\
+	&= \{ y \in Y ~|~ f(x, y) \in U \} \\
+	&= \big(f^{-1}(U) \big)_x
+	\end{align*}
+	Since $f$ is $S \times T$-measurable, we have that $f^{-1}(U) \in S \times T$, so that $(f^{-1}(U))_x \in T$. Therefore $f_x$ is $T$-measurable. We can similarly show that $f^y$ is $S$-measurable.
+	\end{proof}
+	
+	\noindent We are now ready to define the product measure on $(X \times Y, S \times T)$, given measure spaces $(X, S, \mu), (Y, T, \nu)$. On the semiring of measurable rectangles $P$, define $\mu \times \nu$ by:
+	\[ (\mu \times \nu)(E \times F) = \mu(E) \cdot \nu(F) \]
+	with the convention $0 \cdot \infty = 0$. To proceed any further, we need to show that $\mu \times \nu$ is a premeasure on the semiring $P$.
+	
+	\begin{lemma}
+	The function $\mu \times \nu$ on $P$ is countably additive.
+	\end{lemma}
+	\begin{proof}
+	The proof seems to really depend on the monotone convergence theorem. Let $\{E_n \times F_n\} \sse P$, and suppose $E \times F \in P$ is such that:
+	\[ E \times F= \bigoplus E_n \times F_n \]
+	Note:
+	\begin{align*}
+	\chi_{E \times F}(x, y) &= \chi_E(x) \chi_F(y) \\
+	&= \sum \chi_{E_n}(x) \chi_{F_n}(y) 
+	\end{align*}
+	We thus have:
+	\[ (\chi_{E \times F})_x = \sum \chi_{E_n}(x) \chi_{F_n} \]
+	Now note that the sequence of partial sums $\sum_{j=1}^n \chi_{E_j}(x) \chi_{F_j}$ converges pointwise everywhere up to 
+	\[ \sum \chi_{E_n}(x) \chi_{F_n} \]
 	\end{proof}
 	
 	
